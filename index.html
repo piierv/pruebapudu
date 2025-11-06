@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AulaPudu</title>
+  <link rel="stylesheet" href="/css/styles.css"/>
+</head>
+<body>
+  <header class="bar">
+    <div class="brand">
+      <img src="/assets/pudu.svg" alt="AulaPudu" class="logo"/>
+      <span>AulaPudu</span>
+    </div>
+    <div class="room-info">
+      <label>Room ID</label>
+      <input id="roomId" placeholder="ej. 6A-2025" />
+      <label>Nombre</label>
+      <input id="displayName" placeholder="Tu nombre" />
+      <label class="chk"><input type="checkbox" id="presenterMode"/> Presentador</label>
+      <button id="btnJoin">Unirse</button>
+      <button id="btnCreate">Crear sala</button>
+    </div>
+  </header>
+
+  <main class="grid">
+    <section class="left">
+      <div class="card">
+        <h3>QR para unirse</h3>
+        <canvas id="qrCanvas" width="300" height="300"></canvas>
+        <p class="hint">Escanea para unirte desde el celular</p>
+      </div>
+
+      <div class="card" id="presenterTools" hidden>
+        <h3>Herramientas del presentador</h3>
+        <input id="addSlideUrl" placeholder="URL de imagen o video (mp4, webm)"/>
+        <button id="btnAddSlide">Agregar a la presentación</button>
+        <div class="controls">
+          <button id="btnPrev">◀ Anterior</button>
+          <button id="btnNext">Siguiente ▶</button>
+          <button id="btnClear">Limpiar</button>
+          <button id="btnFullscreen">Pantalla completa</button>
+        </div>
+        <div class="uploader">
+          <h4>Subir examen</h4>
+          <input type="file" id="examFile"/>
+          <button id="btnUploadExam">Subir</button>
+          <p class="hint">Se notificará a todos en tiempo real</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Usuarios conectados</h3>
+        <ul id="userList"></ul>
+      </div>
+    </section>
+
+    <section class="right">
+      <div class="stage" id="stage">
+        <div id="slideContainer"></div>
+      </div>
+      <div class="panel card">
+        <h3>Exámenes subidos</h3>
+        <ul id="examList"></ul>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <span>Hecho para ti — AulaPudu</span>
+  </footer>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/js/app.js"></script>
+</body>
+</html>
