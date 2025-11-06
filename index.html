@@ -1,0 +1,811 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>AulaPudu — Aprende sin fronteras</title>
+
+<!-- Vendors -->
+<script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
+<script>if (window.pdfjsLib){pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js";}</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator/qrcode.js"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --bg-top:#fff7ef; --bg-bottom:#bfe3d7; --text-dark:#134433; --muted:#315a52;
+  --yellow:#f5cf66; --green:#88c1b2; --radius:18px; --card-padding:22px 28px;
+  font-family:'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+}
+*{box-sizing:border-box} html,body{height:100%}
+body{margin:0;color:var(--text-dark);background:linear-gradient(180deg,var(--bg-top) 20%, rgba(191,227,215,0.9) 60%, var(--bg-bottom) 100%);
+  -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;}
+
+.site-header{display:flex;justify-content:space-between;align-items:center;padding:36px 72px 0 72px;position:relative;z-index:10;}
+.brand{display:flex;align-items:center;gap:14px;}
+.brand h1{margin:0;font-weight:700;color:var(--text-dark);font-size:28px;}
+.logo{width:56px;height:auto;}
+.nav{font-size:16px;color:var(--muted)} .nav a{color:var(--muted);text-decoration:none;padding:0 8px}
+.sep{color:var(--muted);opacity:0.6}
+
+.hero{position:relative;display:flex;align-items:center;justify-content:center;min-height:78vh;padding:20px 72px 60px 72px;overflow:hidden;}
+.pudu-big{position:fixed;left:0;bottom:0;height:90vh;width:auto;object-fit:contain;pointer-events:none;user-select:none;z-index:1;opacity:0.5;}
+.hero-content{width:54%;max-width:820px;text-align:center;z-index:2;}
+.eyebrow{letter-spacing:6px;font-weight:700;margin:0;color:var(--muted);font-size:18px;}
+.headline{font-size:72px;margin:8px 0 18px 0;line-height:.95;color:var(--text-dark);}
+.subhead{margin:0 auto 34px auto;max-width:680px;line-height:1.6;font-size:20px;color:rgba(19,68,51,0.8);}
+.cta-list{display:flex;flex-direction:column;gap:22px;align-items:center;margin-top:6px}
+.cta{display:flex;align-items:center;gap:18px;text-decoration:none;min-width:520px;padding:var(--card-padding);border-radius:26px;
+  box-shadow:0 10px 30px rgba(18,60,50,0.08), inset 0 -6px 0 rgba(0,0,0,0.02);font-size:28px;font-weight:800;color:var(--text-dark);transition:all .2s;}
+.cta:hover{transform:translateY(-2px);box-shadow:0 12px 35px rgba(18,60,50,0.12), inset 0 -6px 0 rgba(0,0,0,0.02);}
+.cta-icon{width:72px;height:auto;flex-shrink:0;object-fit:contain;}
+.cta-yellow{background:linear-gradient(180deg,var(--yellow), #f0c85a)}
+.cta-green{background:linear-gradient(180deg,var(--green), #79b9a6)}
+button.red{background-color:#d9534f;color:#fff;border:none;padding:8px 12px;border-radius:8px;cursor:pointer;transition:background-color .2s;}
+button.red:hover{background-color:#c9302c;}
+
+@media(max-width:980px){.hero-content{width:80%}.headline{font-size:44px}.cta{min-width:360px;font-size:22px}.pudu-big{max-width:65%}}
+@media(max-width:640px){
+ .site-header{padding:20px}.hero{padding:20px}.pudu-big{display:none}.headline{font-size:32px}
+ .cta{min-width:100%;justify-content:flex-start}.cta-icon{width:48px;height:auto}
+}
+
+.app-shell{position:relative;z-index:3;width:100%;max-width:1200px;margin:0 auto;padding:0 72px 80px 72px;}
+.container-panel{margin-top:24px;} .hidden{display:none!important;}
+.card,.content-card{background:#fff;padding:var(--card-padding);border-radius:var(--radius);box-shadow:0 6px 15px rgba(18,60,50,0.08);margin-bottom:20px;}
+.content-card{padding:25px 30px;}
+#presenter-login{display:flex;justify-content:center;align-items:center;padding-top:50px;min-height:70vh;}
+.auth-form{max-width:450px;width:100%;padding:40px;text-align:center;}
+.auth-form h2{font-size:32px;font-weight:800;margin:0 0 25px 0;}
+.auth-form label{display:block;text-align:left;margin:15px 0 5px 0;font-weight:600;color:var(--muted);font-size:14px;}
+.auth-form input{width:100%;padding:12px 15px;border:1px solid #ddd;border-radius:8px;font-size:16px;color:var(--text-dark);}
+.auth-form button[type=submit]{width:100%;padding:15px;background:var(--green);color:#fff;font-weight:700;border:none;border-radius:12px;cursor:pointer;font-size:18px;box-shadow:0 4px 10px rgba(136,193,178,.5);transition:.2s;}
+.auth-form button[type=submit]:hover{background:#6dafa0;transform:translateY(-1px);}
+.switch-form{margin-top:25px;font-size:14px;color:var(--muted);} .switch-form a{color:var(--text-dark);font-weight:600;text-decoration:none;}
+
+.presenter-dashboard{display:flex;gap:30px;width:100%;max-width:1200px;align-items:flex-start;}
+.sidebar{width:250px;flex-shrink:0;background:#fff;border-radius:var(--radius);padding:25px 0;box-shadow:0 6px 15px rgba(18,60,50,0.08);height:fit-content;}
+.sidebar h3{margin:0 25px 20px 25px;padding-bottom:10px;border-bottom:1px solid #f0f0f0;color:var(--muted);font-size:18px;}
+.sidebar ul{list-style:none;padding:0;margin:0;}
+.sidebar li a{display:flex;align-items:center;gap:10px;padding:12px 25px;text-decoration:none;color:var(--text-dark);font-weight:600;transition:.1s;border-left:4px solid transparent;}
+.sidebar li a:hover{background-color:var(--bg-top);}
+.sidebar li a.active{background:var(--green);color:#fff;border-left:4px solid var(--text-dark);}
+.main-content{flex-grow:1;}
+.dashboard-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px;margin-top:20px;}
+.dashboard-card{background:var(--bg-top);padding:25px;border-radius:var(--radius);box-shadow:inset 0 0 0 2px rgba(136,193,178,.3);transition:.3s;}
+.dashboard-card:hover{transform:translateY(-3px);box-shadow:0 4px 10px rgba(18,60,50,.1), inset 0 0 0 2px var(--green);}
+.dashboard-card h4{margin-top:0;font-size:20px;display:flex;align-items:center;gap:8px;color:var(--muted);}
+.qr-code-section{text-align:center;padding:10px 0;}
+.session-id{font-size:20px;font-weight:800;color:var(--text-dark);margin-bottom:15px;background:var(--bg-top);padding:5px 10px;border-radius:8px;display:inline-block;}
+#qr{margin:10px auto;width:180px;height:180px;border-radius:12px;border:5px solid #fff;}
+
+.spectator-interface{max-width:900px;margin:30px auto;background:#fff;border-radius:var(--radius);box-shadow:0 6px 15px rgba(18,60,50,.08);text-align:center;}
+.spectator-header{background:var(--green);color:#fff;padding:20px 30px;border-radius:var(--radius) var(--radius) 0 0;text-align:left;}
+.slide-counter{font-weight:600;color:var(--bg-top);margin-top:5px;font-size:16px;}
+.spectator-presentation-area{background:#f5f5f5;padding:20px;margin:0 0 20px 0;min-height:400px;display:flex;flex-direction:column;justify-content:center;align-items:center;border-radius:0 0 12px 12px;position:relative;}
+.spectator-presentation-area.fullscreen{position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,.95);z-index:9999;padding:10px;margin:0;border-radius:0;}
+.fullscreen-button{position:absolute;top:5px;right:5px;background:rgba(0,0,0,.5);color:#fff;border:none;padding:8px;border-radius:5px;cursor:pointer;z-index:10;}
+.slide-content-wrapper{width:100%;max-width:700px;background:#fff;border-radius:12px;box-shadow:0 4px 10px rgba(0,0,0,.1);overflow:hidden;min-height:300px;display:flex;flex-direction:column;justify-content:center;}
+.spectator-slide-pdf-canvas{max-width:100%;height:auto;display:block;margin:0 auto;}
+@media(max-width:640px){.app-shell{padding:0 20px 40px 20px;}.presenter-dashboard{flex-direction:column;}.sidebar{width:100%;margin-bottom:20px;}}
+</style>
+</head>
+<body>
+<header class="site-header">
+  <div class="brand">
+    <img src="logo.png" class="logo" alt="AulaPudu" onerror="this.style.display='none'">
+    <h1>AulaPudu</h1>
+  </div>
+  <nav class="nav">
+    <a href="#" onclick="showPage('landing')">Inicio</a><span class="sep">|</span>
+    <a href="#" onclick="showPage('presenter-login')">Iniciar</a><span class="sep">|</span>
+    <a href="#" onclick="showPage('spectator-join')">Unirse</a>
+  </nav>
+</header>
+
+<section id="landing" class="hero" style="display:flex;">
+  <img src="pudu-large.png" alt="" class="pudu-big" onerror="this.style.display='none'"/>
+  <div class="hero-content">
+    <p class="eyebrow">PLATAFORMA INTERACTIVA PARA APRENDIZAJE</p>
+    <h2 class="headline">Aprende sin fronteras</h2>
+    <p class="subhead">Conecta, aprende y enseña en un entorno digital interactivo.</p>
+    <div class="cta-list">
+      <a class="cta cta-green" href="#" onclick="showPage('presenter-login')"><img src="pudu-icon.png" class="cta-icon" alt=""><span>Entrar como presentador</span></a>
+      <a class="cta cta-yellow" href="#" onclick="showPage('spectator-join')"><img src="pudu-icon-grad.png" class="cta-icon" alt=""><span>Entrar como espectador</span></a>
+    </div>
+  </div>
+</section>
+
+<main id="app" class="app-shell container-panel" style="display:none;">
+  <!-- LOGIN/REGISTER -->
+  <div id="presenter-login" style="display:none;">
+    <div class="card auth-form">
+      <h2 id="auth-title">Inicio de Presentador</h2>
+      <form id="login-form" onsubmit="event.preventDefault(); authenticateUser();">
+        <label for="email">Correo:</label><input id="email" type="email" required placeholder="tu@correo.com">
+        <label for="password">Contraseña:</label><input id="password" type="password" required placeholder="••••••••">
+        <button type="submit" style="margin-top:16px;">Iniciar Sesión</button>
+        <div id="login-error" style="margin-top:10px;color:#c0392b;font-weight:600;"></div>
+        <div class="switch-form">¿No tienes cuenta? <a href="#" onclick="toggleAuthForm()">Regístrate</a></div>
+      </form>
+
+      <form id="register-form" style="display:none;" onsubmit="event.preventDefault(); registerUser();">
+        <label for="reg-name">Nombre:</label><input id="reg-name" required>
+        <label for="reg-email">Correo:</label><input id="reg-email" type="email" required>
+        <label for="reg-password">Contraseña:</label><input id="reg-password" type="password" minlength="6" required>
+        <label for="confirm-password">Confirmar:</label><input id="confirm-password" type="password" minlength="6" required>
+        <button type="submit" style="margin-top:16px;">Registrarse</button>
+        <div id="register-error" style="margin-top:10px;color:#c0392b;font-weight:600;"></div>
+        <div id="register-success" style="margin-top:10px;color:#1e8449;font-weight:700;"></div>
+        <div class="switch-form">¿Ya tienes cuenta? <a href="#" onclick="toggleAuthForm()">Inicia sesión</a></div>
+      </form>
+    </div>
+  </div>
+
+  <!-- PRESENTER DASHBOARD -->
+  <div id="presenter-dashboard" class="presenter-dashboard" style="display:none;margin-top:30px;">
+    <aside class="sidebar">
+      <h3>Menú del Presentador</h3>
+      <ul>
+        <li><a href="#" class="active" onclick="showPresenterContent('overview')">📊 Resumen</a></li>
+        <li><a href="#" onclick="showPresenterContent('presentations')">📝 Presentaciones</a></li>
+        <li><a href="#" onclick="showPresenterContent('live')">🔴 Sesión en Vivo</a></li>
+        <li><a href="#" onclick="showPresenterContent('questions')">❓ Preguntas</a></li>
+        <li><a href="#" onclick="showPresenterContent('spectators')">👥 Espectadores</a></li>
+        <li><a href="#" onclick="showPresenterContent('materials')">📚 Materiales</a></li>
+        <li><a href="#" onclick="showPresenterContent('reports')">📈 Informes</a></li>
+<li><a href="#" onclick="showPresenterContent('exams')">📝 Exámenes</a></li>
+        <li><a href="#" onclick="logout()">🚪 Cerrar Sesión</a></li>
+      </ul>
+    </aside>
+
+    <section class="main-content">
+      <!-- OVERVIEW -->
+      <div id="presenter-overview-content">
+        <h2>Resumen del Dashboard</h2>
+        <div class="dashboard-grid">
+          <div class="dashboard-card">
+            <h4>📊 Presentación Actual</h4>
+            <p id="current-presentation-text">No hay presentación activa.</p>
+            <button onclick="showPresenterContent('presentations')">Gestionar Presentaciones</button>
+          </div>
+          <div class="dashboard-card">
+            <h4>🔗 Unirse por QR</h4>
+            <div class="qr-code-section">
+              <div id="qr"></div>
+              <div class="session-id" id="session-id-display">--</div>
+              <button onclick="generateNewSession()">Generar Nuevo Código QR</button>
+            </div>
+          </div>
+          <div class="dashboard-card">
+            <h4>🚪 Finalizar Sesión Globalmente</h4>
+            <p>Desconecta a todos y borra la sesión.</p>
+            <button class="red" onclick="deleteSessionGlobally()">Finalizar y Borrar Sesión</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- PRESENTATIONS -->
+      <div id="presenter-presentations-content" style="display:none;">
+        <h2>Mis Presentaciones</h2>
+        <div class="content-card">
+          <h3>📤 Subir Nueva Presentación</h3>
+          <p>Soportado: PDF, PPT/PPTX (se guardan; el visor renderiza PDF).</p>
+          <input id="presentation-upload" type="file" accept=".pdf,.ppt,.pptx,.docx">
+          <button onclick="uploadPresentation()" id="upload-presentation-btn">Subir</button>
+          <div id="upload-presentation-status" style="margin-top:10px;"></div>
+        </div>
+
+        <div class="content-card">
+          <h3>📁 Presentaciones Disponibles</h3>
+          <ul id="presentations-list" style="list-style:none;padding:0;margin:0;"></ul>
+        </div>
+      </div>
+
+      <!-- LIVE -->
+      <div id="presenter-live-content" style="display:none;">
+        <h2>Control de Sesión en Vivo</h2>
+        <div class="content-card">
+          <h3>🔴 Presentando: <span id="current-presentation-title">--</span></h3>
+          <p>Diapositiva: <span id="current-slide">1</span>/<span id="total-slides">1</span></p>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;">
+            <button onclick="prevSlide()">Anterior</button>
+            <button onclick="nextSlide()">Siguiente</button>
+            <button style="background:var(--yellow);" onclick="endPresentation()">Finalizar</button>
+          </div>
+          <div id="pdf-viewer-container" style="width:100%;height:500px;margin-top:16px;border:1px solid #ddd;border-radius:8px;overflow:auto;">
+            <canvas id="pdf-canvas" style="display:none;margin:0 auto;"></canvas>
+            <div id="current-slide-content" style="padding:20px;text-align:center;display:block;">
+              <h3>Diapositiva 1</h3><p>Carga un PDF para previsualizar aquí.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- QUESTIONS -->
+      <div id="presenter-questions-content" style="display:none;">
+        <h2>Preguntas</h2>
+        <div class="content-card">
+          <h3>➕ Nueva Pregunta</h3>
+          <input id="q-title" placeholder="Tu pregunta..." style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;">
+          <button style="margin-top:10px;" onclick="saveQuestion()">Guardar y Enviar</button>
+        </div>
+        <div class="content-card">
+          <h3>📋 Guardadas</h3>
+          <ul id="saved-questions" style="list-style:none;padding:0;margin:0;"></ul>
+        </div>
+      </div>
+
+      <!-- SPECTATORS -->
+      <div id="presenter-spectators-content" style="display:none;">
+        <h2>Espectadores</h2>
+        <div class="content-card">
+          <h3>Conectados (<span id="active-spectators">0</span>)</h3>
+          <ul id="spectators-list" style="list-style:none;padding:0;margin:0;"></ul>
+        </div>
+      </div>
+
+      <!-- MATERIALS -->
+      <div id="presenter-materials-content" style="display:none;">
+        <h2>Materiales</h2>
+        <div class="content-card">
+          <h3>📤 Subir Material</h3>
+          <input id="material-upload" type="file">
+          <button onclick="uploadMaterial()" id="upload-material-btn">Subir</button>
+          <div id="upload-material-status" style="margin-top:10px;"></div>
+        </div>
+        <div class="content-card">
+          <h3>📚 Disponible</h3>
+          <ul id="materials-list" style="list-style:none;padding:0;margin:0;"></ul>
+        </div>
+      </div>
+
+      <!-- REPORTS -->
+      <!-- EXAMS -->
+      <div id="presenter-exams-content" style="display:none;">
+        <h2>Exámenes en Tiempo Real</h2>
+        <div class="content-card">
+          <h3>➕ Crear examen</h3>
+          <label>Título</label>
+          <input id="exam-title" placeholder="Control 1 - Funciones">
+          <label>Preguntas (JSON)</label>
+          <textarea id="exam-questions" style="width:100%;min-height:140px;border:1px solid #ddd;border-radius:8px;padding:10px;" placeholder='[{"q":"2+2?","type":"single","options":["3","4","5"]}]'></textarea>
+          <button style="margin-top:10px;" onclick="createExam()">Crear</button>
+          <div id="exam-create-status" style="margin-top:8px;color:#1e8449;font-weight:600;"></div>
+        </div>
+        <div class="content-card">
+          <h3>📋 Exámenes creados</h3>
+          <ul id="exam-list" style="list-style:none;padding:0;margin:0;"></ul>
+        </div>
+      </div>
+
+      <div id="presenter-reports-content" style="display:none;">
+        <h2>Informes</h2>
+        <div class="content-card">
+          <h3>Asistencia</h3>
+          <button onclick="viewAttendance()">Ver Asistencia</button>
+          <div id="attendance-list" style="margin-top:10px;"></div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- SPECTATOR JOIN -->
+  <div id="spectator-join" style="display:none;">
+    <div class="card" style="max-width:450px;margin:40px auto;text-align:center;">
+      <h2>Unirse a una Presentación</h2>
+      <p>Escanee el QR o ingrese el ID.</p>
+      <label>ID de Sesión</label><input id="session-id-input" placeholder="AULAPUDU-12345">
+      <label>Tu Nombre</label><input id="spectator-name" placeholder="Nombre">
+      <button onclick="joinSession()" style="margin-top:12px;">Unirse</button>
+    </div>
+  </div>
+
+  <!-- SPECTATOR UI -->
+  <div id="spectator-interface" style="display:none;">
+    <div class="spectator-interface">
+      <div class="spectator-header">
+        <h2>Presentación: <span id="spectator-presentation-title">--</span></h2>
+        <div class="slide-counter">Diapositiva <span id="spectator-slide-number">--</span> de <span id="spectator-total-slides">--</span></div>
+      </div>
+      <div class="spectator-presentation-area" id="spectator-presentation-area">
+        <button class="fullscreen-button" onclick="toggleFullscreen()">🗖 Pantalla Completa</button>
+        <div class="slide-content-wrapper">
+          <div id="spectator-current-slide-content" style="padding:30px;">
+            <h3>Esperando al Presentador</h3>
+          </div>
+          <canvas id="spectator-pdf-canvas" class="spectator-slide-pdf-canvas" style="display:none;"></canvas>
+        </div>
+      </div>
+      <div style="padding:20px;border-top:1px solid #eee;">
+        <div>
+          <button onclick="sendReaction('love')">❤️</button>
+          <button onclick="sendReaction('clap')">👏</button>
+          <button onclick="sendReaction('question')">❓</button>
+          <button onclick="sendReaction('thumbsup')">👍</button>
+          <button onclick="sendReaction('thumbsdown')">👎</button>
+        </div>
+        <div style="margin-top:10px;">
+          <button onclick="leaveSession()">Salir</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer class="site-footer" aria-hidden="true" style="padding:40px 80px 80px 80px;"></footer>
+
+<script>
+/*** CONFIG — reemplaza con tus claves ***/
+const SUPABASE_URL = "SUPABASE_URL";
+const SUPABASE_ANON_KEY = "SUPABASE_ANON_KEY";
+const supa = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const STORAGE_BUCKET_PRESENTATIONS = "presentations";
+const STORAGE_BUCKET_MATERIALS = "materials";
+
+// Estado
+let isPresenter=false, currentUser=null;
+let currentSessionCode=null;
+let currentPresentation=null, currentFileUrl=null, fileType=null;
+let pdfDoc=null, currentSlide=1, totalSlides=1;
+let spectatorPdfDoc=null;
+let rt={chan:null, presenceKey:null, liveSpectators:{}};
+
+// ===== Navegación =====
+function showPage(id){
+  ["landing","presenter-login","presenter-dashboard","spectator-join","spectator-interface"].forEach(v=>{
+    const el = document.getElementById(v); if(el) el.style.display = "none";
+  });
+  const app = document.getElementById("app");
+  if(id==="landing"){ document.getElementById("landing").style.display="flex"; app.style.display="none"; cleanupRealtime(); isPresenter=false; return; }
+  app.style.display="block";
+  if(id==="presenter-dashboard" && !currentUser){ id="presenter-login"; }
+  document.getElementById(id).style.display="block";
+  if(id==="presenter-dashboard"){
+    isPresenter=true;
+    showPresenterContent('overview');
+  }
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+function toggleAuthForm(){
+  const login=document.getElementById('login-form'), reg=document.getElementById('register-form'), title=document.getElementById('auth-title');
+  const isLogin = login.style.display !== "none"; login.style.display = isLogin?"none":"block"; reg.style.display = isLogin?"block":"none";
+  title.textContent = isLogin? "Registro de Presentador":"Inicio de Presentador";
+  document.getElementById('login-error').textContent=''; document.getElementById('register-error').textContent=''; document.getElementById('register-success').textContent='';
+}
+function showPresenterContent(key){
+  ["overview","presentations","live","questions","spectators","materials","reports"].forEach(k=>{
+    const el = document.getElementById(`presenter-${k}-content`); if(el) el.style.display = (k===key)?"block":"none";
+  });
+  document.querySelectorAll('.sidebar a').forEach(a=>a.classList.remove('active'));
+  const match = document.querySelector(`.sidebar a[onclick*="${key}"]`); if(match) match.classList.add('active');
+
+  if(key==="presentations"){ loadPresentationsListUI(); }
+  if(key==="materials"){ loadMaterialsListUI(); }
+  if(key==="spectators"){ updateSpectatorList(); }
+  if(key==="exams"){ loadExamsList(); }
+}
+
+// ===== Auth =====
+async function authenticateUser(){
+  const email=document.getElementById('email').value.trim(), password=document.getElementById('password').value;
+  const err=document.getElementById('login-error'); err.textContent='';
+  const { data, error } = await supa.auth.signInWithPassword({email,password});
+  if(error){ err.textContent=error.message; return; }
+  currentUser = data.user || (await supa.auth.getUser()).data.user;
+  showPage('presenter-dashboard');
+}
+async function registerUser(){
+  const name=document.getElementById('reg-name').value.trim();
+  const email=document.getElementById('reg-email').value.trim();
+  const pass=document.getElementById('reg-password').value;
+  const conf=document.getElementById('confirm-password').value;
+  const err=document.getElementById('register-error'); const ok=document.getElementById('register-success'); err.textContent=''; ok.textContent='';
+  if(pass!==conf){ err.textContent='Las contraseñas no coinciden.'; return; }
+  const { data, error } = await supa.auth.signUp({ email:email, password:pass, options:{ data:{ name } } });
+  if(error){ err.textContent=error.message; return; }
+  ok.textContent='Registro exitoso. Revisa tu correo.';
+}
+async function logout(){ try{ await supa.auth.signOut(); }catch(e){} currentUser=null; await cleanupRealtime(); showPage('landing'); }
+supa.auth.onAuthStateChange((_e, session)=>{ currentUser=session?.user||null; });
+
+// ===== Sesión + QR =====
+function makeQR(code){
+  const joinUrl = `${location.origin}${location.pathname}?session=${encodeURIComponent(code)}`;
+  const container = document.getElementById("qr"); container.innerHTML="";
+  const qr = qrcode(0,"L"); qr.addData(joinUrl); qr.make();
+  const div = document.createElement("div"); div.style.width="180px"; div.style.height="180px"; div.style.background="#fff"; div.style.borderRadius="12px"; div.style.overflow="hidden";
+  div.innerHTML = qr.createImgTag(5,2,"#134433"); // cellSize=5, margin=2
+  container.appendChild(div);
+}
+async function generateNewSession(){
+  if(!currentUser){ alert("Inicia sesión."); return; }
+  const code = "AULAPUDU-"+ Math.floor(10000 + Math.random()*90000);
+  const { error } = await supa.from('sessions').insert([{ session_id:code, presentor_uid: currentUser.id }]);
+  if(error){ alert("Error creando sesión: "+error.message); return; }
+  currentSessionCode = code;
+  document.getElementById('session-id-display').textContent = code;
+  makeQR(code);
+  await initRealtime(code, { asPresenter:true });
+  alert("Sesión creada y Realtime activo.");
+}
+async function deleteSessionGlobally(){
+  if(!currentSessionCode || !currentUser){ alert("No hay sesión o no estás autenticado."); return; }
+  if(!confirm("¿Borrar sesión y desconectar a todos?")) return;
+  if(rt.chan){ rt.chan.send({ type:'broadcast', event:'session_delete', payload:{} }); }
+  const { error } = await supa.from('sessions').delete().eq('session_id', currentSessionCode).eq('presentor_uid', currentUser.id);
+  if(error){ alert("Error borrando: "+error.message); return; }
+  await cleanupRealtime(); currentSessionCode=null; document.getElementById('session-id-display').textContent='--'; document.getElementById('qr').innerHTML="";
+  alert("Sesión finalizada.");
+}
+
+// ===== Presentaciones (Storage) =====
+async function uploadPresentation(){
+  if(!currentUser){ alert("Inicia sesión."); return; }
+  const inp=document.getElementById('presentation-upload'); if(!inp.files.length) return alert("Elige un archivo");
+  const f=inp.files[0];
+  const path = `${currentUser.id}/${Date.now()}_${f.name}`;
+  const { error } = await supa.storage.from(STORAGE_BUCKET_PRESENTATIONS).upload(path, f, { upsert:false });
+  const box=document.getElementById('upload-presentation-status');
+  if(error){ box.textContent="Error: "+error.message; return; }
+  box.textContent="Subido ✅";
+  loadPresentationsListUI();
+}
+async function listBucket(bucket){
+  const { data, error } = await supa.storage.from(bucket).list(currentUser?.id||"", { limit:100, sortBy:{column:'created_at', order:'desc'} });
+  if(error){ return []; }
+  return data||[];
+}
+function publicUrl(bucket, path){
+  const { data } = supa.storage.from(bucket).getPublicUrl(path);
+  return data.publicUrl;
+}
+async function loadPresentationsListUI(){
+  const ul=document.getElementById('presentations-list'); if(!ul) return;
+  if(!currentUser){ ul.innerHTML="<li>Inicia sesión.</li>"; return; }
+  const files = await listBucket(STORAGE_BUCKET_PRESENTATIONS);
+  ul.innerHTML = files.length? "" : "<li>No hay archivos.</li>";
+  for(const f of files){
+    const li=document.createElement('li'); li.style.padding="8px 0"; li.style.borderBottom="1px solid #eee";
+    const url = publicUrl(STORAGE_BUCKET_PRESENTATIONS, `${currentUser.id}/${f.name}`);
+    li.innerHTML = `<strong>${f.name}</strong> — <button onclick="startPresentation('${url}','${f.name}')">Presentar</button>`;
+    ul.appendChild(li);
+  }
+}
+async function startPresentation(url, name){
+  currentPresentation=name; currentFileUrl=url; fileType = url.toLowerCase().endsWith(".pdf")? "pdf":"other";
+  document.getElementById('current-presentation-text').textContent = `Presentando: ${name}`;
+  showPresenterContent('live');
+  document.getElementById('current-presentation-title').textContent = name;
+  if(url.toLowerCase().endsWith('.mp4')){
+    fileType='video';
+    const box=document.getElementById('current-slide-content');
+    document.getElementById('pdf-canvas').style.display='none';
+    box.style.display='block';
+    box.innerHTML = `<video src="${url}" controls style="max-width:100%;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,.15)"></video>`;
+    if(rt.chan){ rt.chan.send({type:'broadcast', event:'presentation_start', payload:{ title:name, url, fileType:'video', totalSlides:1 }}); }
+    return;
+  }
+  if(fileType==="pdf"){
+    pdfDoc = await pdfjsLib.getDocument(url).promise;
+    totalSlides = pdfDoc.numPages; currentSlide=1;
+    document.getElementById('total-slides').textContent = totalSlides;
+    renderPDFPage(currentSlide, 'pdf-canvas');
+  } else {
+    pdfDoc=null; totalSlides=1; currentSlide=1;
+    document.getElementById('total-slides').textContent = 1;
+    document.getElementById('pdf-canvas').style.display="none";
+    const box=document.getElementById('current-slide-content'); box.style.display="block"; box.innerHTML=`<h3>${name}</h3><p><a href="${url}" target="_blank">Abrir archivo</a></p>`;
+  }
+  // Broadcast a espectadores
+  if(rt.chan){ rt.chan.send({type:'broadcast', event:'presentation_start', payload:{ title:name, url, fileType, totalSlides }}); }
+}
+async function renderPDFPage(n, canvasId){
+  const canvas=document.getElementById(canvasId); const ctx=canvas.getContext('2d');
+  const page = await pdfDoc.getPage(n);
+  const viewport = page.getViewport({ scale: 1.5 });
+  canvas.height = viewport.height; canvas.width = viewport.width; canvas.style.display="block";
+  document.getElementById('current-slide-content').style.display="none";
+  await page.render({ canvasContext: ctx, viewport }).promise;
+}
+function prevSlide(){ if(!pdfDoc) return; currentSlide=Math.max(1,currentSlide-1); document.getElementById('current-slide').textContent=currentSlide; renderPDFPage(currentSlide,'pdf-canvas'); if(rt.chan){ rt.chan.send({type:'broadcast',event:'slide',payload:{n:currentSlide}});} }
+function nextSlide(){ if(!pdfDoc) return; currentSlide=Math.min(totalSlides,currentSlide+1); document.getElementById('current-slide').textContent=currentSlide; renderPDFPage(currentSlide,'pdf-canvas'); if(rt.chan){ rt.chan.send({type:'broadcast',event:'slide',payload:{n:currentSlide}});} }
+function endPresentation(){
+  if(!currentPresentation) return;
+  if(rt.chan){ rt.chan.send({type:'broadcast',event:'presentation_end',payload:{}}); }
+  currentPresentation=null; pdfDoc=null; currentFileUrl=null; fileType=null; currentSlide=1; totalSlides=1;
+  document.getElementById('current-presentation-title').textContent='--';
+  document.getElementById('current-slide').textContent='1'; document.getElementById('total-slides').textContent='1';
+  document.getElementById('pdf-canvas').style.display='none'; document.getElementById('current-slide-content').style.display='block';
+}
+
+// ===== Materiales =====
+async function uploadMaterial(){
+  if(!currentUser){ alert("Inicia sesión."); return; }
+  const inp=document.getElementById('material-upload'); if(!inp.files.length) return alert("Elige un archivo");
+  const f=inp.files[0]; const path=`${currentUser.id}/${Date.now()}_${f.name}`;
+  const { error } = await supa.storage.from(STORAGE_BUCKET_MATERIALS).upload(path, f, { upsert:false });
+  const box=document.getElementById('upload-material-status'); if(error){ box.textContent="Error: "+error.message; return; }
+  box.textContent="Subido ✅"; loadMaterialsListUI();
+}
+async function loadMaterialsListUI(){
+  const ul=document.getElementById('materials-list'); if(!ul) return;
+  if(!currentUser){ ul.innerHTML="<li>Inicia sesión.</li>"; return; }
+  const files = await listBucket(STORAGE_BUCKET_MATERIALS);
+  ul.innerHTML = files.length? "" : "<li>No hay archivos.</li>";
+  for(const f of files){
+    const url = publicUrl(STORAGE_BUCKET_MATERIALS, `${currentUser.id}/${f.name}`);
+    const li=document.createElement('li'); li.style.padding="8px 0"; li.style.borderBottom="1px solid #eee";
+    li.innerHTML = `<a href="${url}" target="_blank">${f.name}</a>`; ul.appendChild(li);
+  }
+}
+
+// ===== Realtime (presence, slides, reactions) =====
+async function initRealtime(sessionId, opts={}){
+  if(rt.chan){ try{ await rt.chan.unsubscribe(); }catch(e){} }
+  rt.liveSpectators = {};
+  const chan = supa.channel(`aula:${sessionId}`, { config:{ presence:{ key: (opts.asPresenter? 'presenter:' : 'user:') + (currentUser?.id || crypto.randomUUID()) }}});
+  rt.chan = chan;
+  // Presence
+  chan.on('presence', { event:'sync' }, ()=>{
+    const state = chan.presenceState();
+    rt.liveSpectators = {};
+    Object.keys(state).forEach(key=>{
+      state[key].forEach(member=>{
+        rt.liveSpectators[key]=member;
+      });
+    });
+    updateSpectatorList();
+  });
+  // Broadcast
+  chan.on('broadcast', { event:'slide' }, ({payload})=>{
+    if(!isPresenter){ updateSpectatorSlide(payload.n); }
+  });
+  chan.on('broadcast', { event:'presentation_start' }, async ({payload})=>{
+    if(!isPresenter){
+      document.getElementById('spectator-presentation-title').textContent = payload.title;
+      document.getElementById('spectator-total-slides').textContent = payload.totalSlides||'--';
+      if(payload.fileType==='pdf'){
+        spectatorPdfDoc = await pdfjsLib.getDocument(payload.url).promise;
+        updateSpectatorSlide(1);
+      } else if(payload.fileType==='video') {
+        spectatorPdfDoc=null;
+        const canv = document.getElementById('spectator-pdf-canvas');
+        canv.style.display='none';
+        const box = document.getElementById('spectator-current-slide-content');
+        box.style.display='block';
+        box.innerHTML = `<video src="${payload.url}" controls style="max-width:100%;border-radius:8px;"></video>`;
+      } else {
+        spectatorPdfDoc=null;
+        document.getElementById('spectator-pdf-canvas').style.display='none';
+        document.getElementById('spectator-current-slide-content').style.display='block';
+        document.getElementById('spectator-current-slide-content').innerHTML = `<h3>${payload.title}</h3><p><a href="${payload.url}" target="_blank">Abrir</a></p>`;
+      }
+    }
+  });
+  chan.on('broadcast', { event:'presentation_end' }, ()=>{
+    if(!isPresenter){
+      spectatorPdfDoc=null;
+      document.getElementById('spectator-pdf-canvas').style.display='none';
+      document.getElementById('spectator-current-slide-content').style.display='block';
+      document.getElementById('spectator-current-slide-content').innerHTML = `<h3>Presentación finalizada</h3>`;
+    }
+  });
+  chan.on('broadcast', { event:'session_delete' }, ()=>{
+    alert("Sesión finalizada por el presentador.");
+    cleanupRealtime(); showPage('spectator-join');
+  });
+  chan.on('broadcast', { event:'reaction' }, ({payload})=>{
+    // Aquí podrías sumar contadores en el panel del presentador
+    // (por brevedad, mostramos por consola)
+    console.log("Reaction:", payload);
+  });
+
+  // Subscribe + track
+  await chan.subscribe(async (status)=>{
+    if(status === 'SUBSCRIBED'){
+      await chan.track({ id: (currentUser?.id||crypto.randomUUID()), name: (currentUser?.email||'Invitado'), type: (opts.asPresenter?'presenter':'spectator') });
+    }
+  });
+}
+
+async function cleanupRealtime(){
+  try{ if(rt.chan){ await rt.chan.unsubscribe(); } }catch(e){}
+  rt.chan=null; rt.liveSpectators={};
+}
+
+function updateSpectatorList(){
+  const ul=document.getElementById('spectators-list'); const c=document.getElementById('active-spectators');
+  if(!ul||!c) return;
+  const people = Object.values(rt.liveSpectators).filter(x=>x.type!=='presenter');
+  c.textContent = people.length;
+  ul.innerHTML = people.length? "" : "<li>No hay espectadores conectados.</li>";
+  for(const p of people){
+    const li=document.createElement('li'); li.style.padding="8px 0"; li.style.borderBottom="1px solid #eee";
+    li.textContent = `👤 ${p.name||'Anónimo'}`; ul.appendChild(li);
+  }
+}
+
+function updateSpectatorSlide(n){
+  document.getElementById('spectator-slide-number').textContent = n;
+  if(spectatorPdfDoc){
+    const canvas=document.getElementById('spectator-pdf-canvas'); const ctx=canvas.getContext('2d');
+    spectatorPdfDoc.getPage(n).then(page=>{
+      const viewport = page.getViewport({ scale: 1.5 });
+      canvas.height = viewport.height; canvas.width = viewport.width; canvas.style.display="block";
+      document.getElementById('spectator-current-slide-content').style.display="none";
+      page.render({ canvasContext: ctx, viewport });
+    });
+  }
+}
+
+// ===== Spectator actions =====
+async function joinSession(){
+  const code=document.getElementById('session-id-input').value.trim();
+  const name=document.getElementById('spectator-name').value.trim();
+  if(!code||!name) return alert("Completa ID y Nombre");
+  const { data, error } = await supa.from('sessions').select('session_id').eq('session_id', code).maybeSingle();
+  if(error || !data){ alert("Sesión inexistente."); return; }
+  currentSessionCode = code;
+  await initRealtime(code, { asPresenter:false, name });
+  document.getElementById('spectator-presentation-title').textContent = code;
+  showPage('spectator-interface');
+}
+function leaveSession(){ alert("Has abandonado la sesión."); cleanupRealtime(); showPage('spectator-join'); }
+async function sendReaction(kind){
+  if(!currentSessionCode){ return; }
+  if(rt.chan){ rt.chan.send({ type:'broadcast', event:'reaction', payload:{ kind } }); }
+  await supa.from('reactions').insert([{ session_id: currentSessionCode, kind, user_id: (currentUser?.id||null) }]).catch(()=>{});
+}
+function toggleFullscreen(){
+  const area = document.getElementById('spectator-presentation-area');
+  area.classList.toggle('fullscreen');
+}
+
+// ===== Reports =====
+// ===== Exams (Realtime) =====
+let currentExamId=null, currentExamQuestions=[];
+
+async function createExam(){
+  if(!currentSessionCode){ alert("Crea o selecciona una sesión."); return; }
+  const title = document.getElementById('exam-title').value.trim();
+  const raw = document.getElementById('exam-questions').value.trim();
+  const status = document.getElementById('exam-create-status');
+  status.textContent='';
+  let questions;
+  try{ questions = JSON.parse(raw); }catch(e){ status.style.color='#c0392b'; status.textContent = 'JSON inválido.'; return; }
+  const { data, error } = await supa.from('exams').insert([{ session_id: currentSessionCode, title, questions }]).select().single();
+  if(error){ status.style.color='#c0392b'; status.textContent = 'Error: '+error.message; return; }
+  status.style.color='#1e8449'; status.textContent='Examen creado ✅';
+  await loadExamsList();
+  // option to broadcast immediately
+  if(confirm("¿Enviar a espectadores ahora?")){
+    startExamBroadcast(data.id);
+  }
+}
+
+async function loadExamsList(){
+  const ul = document.getElementById('exam-list'); if(!ul) return;
+  const { data, error } = await supa.from('exams').select('*').eq('session_id', currentSessionCode).order('created_at', { ascending:false });
+  if(error){ ul.innerHTML = '<li>Error al cargar</li>'; return; }
+  ul.innerHTML = data?.length? '' : '<li>Sin exámenes.</li>';
+  (data||[]).forEach(ex=>{
+    const li = document.createElement('li'); li.style.padding='8px 0'; li.style.borderBottom='1px solid #eee';
+    li.innerHTML = `<strong>${ex.title}</strong> — <button onclick="startExamBroadcast('${ex.id}')">Enviar a espectadores</button>`;
+    ul.appendChild(li);
+  });
+}
+async function startExamBroadcast(examId){
+  const { data, error } = await supa.from('exams').select('*').eq('id', examId).single();
+  if(error){ return alert('No se pudo cargar examen.'); }
+  if(rt.chan){ rt.chan.send({ type:'broadcast', event:'exam_start', payload:{ exam: data }}); }
+  alert("Examen enviado a espectadores.");
+}
+
+// Render exam in spectator
+function renderSpectatorExam(exam){
+  currentExamId = exam.id;
+  const panel = document.getElementById('spectator-exam');
+  const form = document.getElementById('spectator-exam-form');
+  const title = document.getElementById('spectator-exam-title');
+  const status = document.getElementById('spectator-exam-status');
+  status.textContent='';
+  title.textContent = exam.title || 'Examen';
+  panel.style.display='block';
+  form.innerHTML='';
+  currentExamQuestions = Array.isArray(exam.questions)? exam.questions : [];
+  currentExamQuestions.forEach((q, idx)=>{
+    const wrap = document.createElement('div'); wrap.style.margin='10px 0';
+    const label = document.createElement('div'); label.style.fontWeight='700'; label.textContent = `${idx+1}. ${q.q||''}`;
+    wrap.appendChild(label);
+    if(q.type==='single' && Array.isArray(q.options)){
+      q.options.forEach(opt=>{
+        const id = `q${idx}_${opt}`;
+        const line = document.createElement('div');
+        line.innerHTML = `<input type="radio" name="q${idx}" id="${id}" value="${opt}"> <label for="${id}">${opt}</label>`;
+        wrap.appendChild(line);
+      });
+    }else if(q.type==='multi' && Array.isArray(q.options)){
+      q.options.forEach(opt=>{
+        const id = `q${idx}_${opt}`;
+        const line = document.createElement('div');
+        line.innerHTML = `<input type="checkbox" name="q${idx}" id="${id}" value="${opt}"> <label for="${id}">${opt}</label>`;
+        wrap.appendChild(line);
+      });
+    }else{
+      const ta = document.createElement('textarea');
+      ta.name = `q${idx}`; ta.style.width='100%'; ta.style.minHeight='70px';
+      wrap.appendChild(ta);
+    }
+    form.appendChild(wrap);
+  });
+}
+async function submitExamAnswers(){
+  if(!currentExamId){ return; }
+  const form = document.getElementById('spectator-exam-form');
+  const answers = currentExamQuestions.map((q, idx)=>{
+    const name = `q${idx}`;
+    if(q.type==='single'){
+      const el = form.querySelector(`input[name="${name}"]:checked`);
+      return { idx, value: el? el.value : null };
+    }else if(q.type==='multi'){
+      const els = [...form.querySelectorAll(`input[name="${name}"]:checked`)].map(e=>e.value);
+      return { idx, value: els };
+    }else{
+      const el = form.querySelector(`textarea[name="${name}"]`);
+      return { idx, value: el? el.value : "" };
+    }
+  });
+  const uname = document.getElementById('spectator-name')?.value || 'Anónimo';
+  const { error } = await supa.from('exam_answers').insert([{ exam_id: currentExamId, user_id: (currentUser?.id||null), user_name: uname, answers }]);
+  const status = document.getElementById('spectator-exam-status');
+  if(error){ status.style.color='#c0392b'; status.textContent='Error: '+error.message; return; }
+  status.style.color='#1e8449'; status.textContent='Respuestas enviadas ✅';
+}
+
+// Hook realtime event
+if(!window.__AULAPUDU_EXAM_PATCHED__){
+  window.__AULAPUDU_EXAM_PATCHED__=true;
+  (function waitChan(){
+    const _init = window.initRealtime;
+    window.initRealtime = async function(sessionId, opts){
+      const res = await _init(sessionId, opts);
+      // Add handler once channel exists
+      if(rt && rt.chan){
+        rt.chan.on('broadcast', { event:'exam_start' }, ({payload})=>{
+          if(!isPresenter){ renderSpectatorExam(payload.exam); }
+        });
+      }
+      return res;
+    }
+  })();
+}
+
+// ===== Video presentations support (.mp4) =====
+
+async function viewAttendance(){
+  if(!currentSessionCode){ alert("No hay sesión activa."); return; }
+  const { data, error } = await supa.from('attendance').select('*').eq('session_id', currentSessionCode).order('joined_at', { ascending:false });
+  const box=document.getElementById('attendance-list');
+  if(error){ box.textContent="Error: "+error.message; return; }
+  if(!data?.length){ box.textContent="Sin registros."; return; }
+  box.innerHTML = "<ul style='list-style:none;padding:0;margin:0;'></ul>";
+  const ul = box.querySelector('ul');
+  data.forEach(r=>{
+    const li=document.createElement('li'); li.style.padding="6px 0"; li.style.borderBottom="1px solid #eee";
+    li.textContent = `${r.user_name||r.user_id||'Usuario'} — ${new Date(r.joined_at).toLocaleString()}`;
+    ul.appendChild(li);
+  });
+}
+</script>
+<script>
+// Auto-join via URL ?session=
+(function(){
+  const p = new URLSearchParams(location.search); const s = p.get("session");
+  if(s){ document.getElementById('session-id-input').value = s; showPage('spectator-join'); }
+})();
+</script>
+</body>
+</html>
