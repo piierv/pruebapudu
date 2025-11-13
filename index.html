@@ -43,6 +43,50 @@
       color: var(--text-main);
     }
 
+    /* SPLASH / PANTALLA INICIO */
+    .splash {
+      position: fixed;
+      inset: 0;
+      background: #16a34a;
+      color: #ecfdf5;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 24px;
+      z-index: 50;
+      transition: opacity 0.25s ease-out;
+    }
+
+    .splash-title {
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .splash-sub {
+      font-size: 14px;
+      opacity: 0.9;
+      margin-bottom: 24px;
+    }
+
+    .splash-icon {
+      font-size: 60px;
+      margin-bottom: 16px;
+    }
+
+    .splash-hint {
+      font-size: 13px;
+      opacity: 0.9;
+      padding: 6px 14px;
+      border-radius: 999px;
+      background: rgba(22, 101, 52, 0.35);
+      border: 1px solid rgba(187, 247, 208, 0.4);
+    }
+
     /* CONTENEDOR APP */
     .app {
       min-height: 100vh;
@@ -106,7 +150,7 @@
       flex: 1;
       display: flex;
       justify-content: center;
-      padding: 10px 12px 70px; /* espacio para el menú abajo */
+      padding: 10px 12px 70px; /* espacio para menú abajo */
     }
 
     .content {
@@ -294,7 +338,7 @@
       padding-left: 18px;
       font-size: 12px;
       color: var(--text-muted);
-      max-height: 100px;
+      max-height: 120px;
       overflow-y: auto;
     }
 
@@ -374,6 +418,14 @@
   </style>
 </head>
 <body>
+  <!-- SPLASH -->
+  <div id="splash" class="splash">
+    <div class="splash-title">RECYBOOM</div>
+    <div class="splash-sub">Reciclar fácil, en tu barrio</div>
+    <div class="splash-icon">♻️</div>
+    <div class="splash-hint">Toca la pantalla para entrar</div>
+  </div>
+
   <div class="app">
     <!-- ENCABEZADO -->
     <header class="header">
@@ -384,7 +436,7 @@
           <p class="header-sub">Reciclar fácil para todos</p>
         </div>
       </div>
-      <div class="header-badge">Piloto · Santiago</div>
+      <div class="header-badge">Piloto · Huechuraba</div>
     </header>
 
     <!-- CONTENIDO -->
@@ -395,7 +447,7 @@
           <div class="card">
             <h2 class="card-title">Mapa de reciclaje</h2>
             <p class="card-text">
-              Mira tu ubicación y algunos puntos de reciclaje de ejemplo. También puedes proponer un nuevo punto.
+              Mira tu ubicación y lugares para reciclar en Huechuraba. También puedes proponer un nuevo punto.
             </p>
 
             <button class="btn-main" id="btn-locate-top">
@@ -413,6 +465,22 @@
               Toca en el mapa para sugerir un nuevo lugar donde reciclar.
             </p>
 
+            <!-- FILTRO POR MATERIAL -->
+            <div class="form-group">
+              <label class="form-label" for="filter-material">Filtrar puntos por material</label>
+              <select id="filter-material">
+                <option value="todos">Todos los materiales</option>
+                <option value="carton">Solo cartón</option>
+                <option value="vidrio">Solo vidrio</option>
+                <option value="latas">Solo latas</option>
+                <option value="plastico">Solo plástico</option>
+                <option value="mixto">Mixto (envases varios)</option>
+                <option value="papel">Papel / documentos</option>
+                <option value="pilas">Pilas</option>
+                <option value="electro">Electrónicos</option>
+              </select>
+            </div>
+
             <p id="coordinates-label" class="map-info">
               Aún no has tocado el mapa.
             </p>
@@ -422,7 +490,7 @@
               <input
                 type="text"
                 id="stop-name"
-                placeholder="Ej: Punto limpio Junta de Vecinos"
+                placeholder="Ej: Punto limpio Plaza Central"
               />
             </div>
 
@@ -441,7 +509,7 @@
               <label class="form-label" for="stop-materials">¿Qué se puede reciclar?</label>
               <textarea
                 id="stop-materials"
-                placeholder="Ej: Plástico, vidrio, papel..."
+                placeholder="Ej: Solo cartón, solo vidrio, latas..."
               ></textarea>
             </div>
 
@@ -450,7 +518,7 @@
             </button>
             <div id="new-stop-message" class="message"></div>
 
-            <h3 style="font-size:14px; margin:10px 0 4px;">Lugares de ejemplo</h3>
+            <h3 style="font-size:14px; margin:10px 0 4px;">Lugares de ejemplo en Huechuraba</h3>
             <ul id="example-list" class="list"></ul>
 
             <h3 style="font-size:14px; margin:10px 0 4px;">Tus sugerencias (solo hoy)</h3>
@@ -471,7 +539,7 @@
               <input
                 type="text"
                 id="pickup-address"
-                placeholder="Ej: Calle 123, comuna"
+                placeholder="Ej: Calle 123, Huechuraba"
               />
             </div>
 
@@ -533,10 +601,10 @@
           <div class="card">
             <h2 class="card-title">Sobre la app</h2>
             <p class="card-text">
-              RECYBOOM quiere hacer el reciclaje algo simple:
+              RECYBOOM quiere hacer el reciclaje algo muy simple:
             </p>
             <ul class="list">
-              <li>Ver lugares cercanos para reciclar.</li>
+              <li>Ver lugares cercanos para reciclar en Huechuraba.</li>
               <li>Proponer nuevos puntos de reciclaje.</li>
               <li>Simular retiros a domicilio.</li>
             </ul>
@@ -573,6 +641,18 @@
 
   <script>
     document.addEventListener("DOMContentLoaded", function () {
+      /* --------- SPLASH --------- */
+      const splash = document.getElementById("splash");
+      splash.addEventListener("click", () => {
+        splash.style.opacity = "0";
+        setTimeout(() => {
+          splash.style.display = "none";
+          if (map) {
+            map.invalidateSize();
+          }
+        }, 250);
+      });
+
       /* --------- NAVEGACIÓN SIMPLE --------- */
       const views = {
         map: document.getElementById("view-map"),
@@ -610,6 +690,7 @@
       const coordinatesLabel = document.getElementById("coordinates-label");
       const exampleList = document.getElementById("example-list");
       const suggestedList = document.getElementById("suggested-list");
+      const filterMaterial = document.getElementById("filter-material");
 
       const btnLocateTop = document.getElementById("btn-locate-top");
       const btnNewStop = document.getElementById("btn-new-stop");
@@ -619,33 +700,72 @@
       let userMarker = null;
       let newStopMarker = null;
       let newStopLatLng = null;
+      let exampleMarkers = [];
 
-      // Lugares de ejemplo
+      // PUNTOS DE EJEMPLO EN HUECHURABA (varios tipos)
       const examplePlaces = [
         {
-          name: "Punto Limpio Plaza Ñuñoa",
-          info: "Plástico, vidrio, papel",
-          lat: -33.455,
-          lng: -70.598,
+          name: "Punto Cartón Plaza Central",
+          info: "Solo cartón",
+          material: "carton",
+          lat: -33.378,
+          lng: -70.640,
         },
         {
-          name: "EcoDepósito La Florida",
-          info: "Envases mixtos",
-          lat: -33.482,
-          lng: -70.651,
+          name: "Punto Vidrio Ciudad Empresarial",
+          info: "Solo vidrio (botellas y frascos)",
+          material: "vidrio",
+          lat: -33.385,
+          lng: -70.628,
         },
         {
-          name: "Reciclaje Centro",
-          info: "Pilas y electrónicos",
-          lat: -33.445,
-          lng: -70.65,
+          name: "Punto Latas Pedro Fontova",
+          info: "Solo latas de bebidas y conservas",
+          material: "latas",
+          lat: -33.370,
+          lng: -70.653,
+        },
+        {
+          name: "Strip Center Huechuraba",
+          info: "Solo plástico (botellas PET)",
+          material: "plastico",
+          lat: -33.379,
+          lng: -70.647,
+        },
+        {
+          name: "Supermercado Verde Huechuraba",
+          info: "Mixto: plástico, vidrio y cartón",
+          material: "mixto",
+          lat: -33.387,
+          lng: -70.636,
+        },
+        {
+          name: "Consultorio Huechuraba",
+          info: "Pilas y baterías pequeñas",
+          material: "pilas",
+          lat: -33.384,
+          lng: -70.646,
+        },
+        {
+          name: "Junta de Vecinos Los Cipreses",
+          info: "Solo papel y documentos",
+          material: "papel",
+          lat: -33.375,
+          lng: -70.632,
+        },
+        {
+          name: "Taller TecnoRecicla",
+          info: "Solo electrónicos (computadores, celulares)",
+          material: "electro",
+          lat: -33.392,
+          lng: -70.642,
         },
       ];
 
-      // Inicializar mapa
+      // Inicializar mapa centrado en Huechuraba
       map = L.map("map", {
-        center: [-33.45, -70.66],
-        zoom: 12,
+        center: [-33.383, -70.64],
+        zoom: 13,
       });
 
       L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -653,20 +773,64 @@
         attribution: "&copy; OpenStreetMap contributors",
       }).addTo(map);
 
-      // Mostrar lugares de ejemplo
+      // Mostrar lugares de ejemplo con marcadores
       examplePlaces.forEach((p) => {
-        L.circleMarker([p.lat, p.lng], {
+        const marker = L.circleMarker([p.lat, p.lng], {
           radius: 7,
           color: "#22c55e",
           fillColor: "#22c55e",
           fillOpacity: 0.9,
         })
           .addTo(map)
-          .bindPopup("<strong>" + p.name + "</strong><br><small>" + p.info + "</small>");
+          .bindPopup(
+            "<strong>" +
+              p.name +
+              "</strong><br><small>" +
+              p.info +
+              "</small><br><small>Material: " +
+              p.material +
+              "</small>"
+          );
 
-        const li = document.createElement("li");
-        li.textContent = p.name + " – " + p.info;
-        exampleList.appendChild(li);
+        exampleMarkers.push({ place: p, marker: marker });
+      });
+
+      // Rellenar lista de ejemplo según filtro
+      function renderExampleList() {
+        const filter = filterMaterial.value; // 'todos', 'carton', 'vidrio', etc.
+        exampleList.innerHTML = "";
+
+        exampleMarkers.forEach(({ place, marker }) => {
+          const matches = filter === "todos" || place.material === filter;
+
+          // Mostrar/ocultar marcador
+          if (matches) {
+            if (!map.hasLayer(marker)) marker.addTo(map);
+          } else {
+            if (map.hasLayer(marker)) map.removeLayer(marker);
+          }
+
+          // Agregar a lista si coincide
+          if (matches) {
+            const li = document.createElement("li");
+            li.textContent =
+              place.name + " – " + place.info + " (Huechuraba)";
+            exampleList.appendChild(li);
+          }
+        });
+
+        if (!exampleList.children.length) {
+          const li = document.createElement("li");
+          li.textContent =
+            "No hay puntos para este tipo de material en esta demo.";
+          exampleList.appendChild(li);
+        }
+      }
+
+      renderExampleList();
+
+      filterMaterial.addEventListener("change", () => {
+        renderExampleList();
       });
 
       function updateLocationStatus(message, error) {
