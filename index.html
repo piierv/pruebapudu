@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>RECYBOOM - App de Reciclaje</title>
+  <title>RECYBOOM - Reciclaje Simple</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 
   <!-- Leaflet CSS -->
@@ -15,24 +15,19 @@
 
   <style>
     :root {
-      --primary: #22c55e;
-      --primary-soft: rgba(34, 197, 94, 0.12);
-      --primary-dark: #15803d;
-      --accent: #0ea5e9;
-      --danger: #ef4444;
+      --green: #22c55e;
+      --green-dark: #15803d;
+      --blue: #0ea5e9;
+      --red: #ef4444;
 
       --bg: #f3f4f6;
       --bg-card: #ffffff;
-      --bg-header: #ffffff;
-      --bg-nav: #ffffff;
+      --border: #e5e7eb;
 
       --text-main: #111827;
       --text-muted: #6b7280;
 
-      --border: #e5e7eb;
-      --shadow-soft: 0 10px 25px rgba(15, 23, 42, 0.06);
-
-      --radius-lg: 18px;
+      --radius-lg: 16px;
       --radius-pill: 999px;
     }
 
@@ -48,111 +43,84 @@
       color: var(--text-main);
     }
 
-    /* APP SHELL */
-    .app-shell {
+    /* CONTENEDOR APP */
+    .app {
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       background: var(--bg);
     }
 
-    .app-header {
-      position: sticky;
-      top: 0;
-      z-index: 20;
-      background: var(--bg-header);
+    /* HEADER */
+    .header {
+      background: #ffffff;
       border-bottom: 1px solid var(--border);
-    }
-
-    .app-header-inner {
-      max-width: 480px;
-      margin: 0 auto;
-      padding: 10px 16px 8px;
+      padding: 10px 16px;
       display: flex;
-      align-items: center;
       justify-content: space-between;
-      gap: 12px;
+      align-items: center;
     }
 
-    .logo-row {
+    .header-left {
       display: flex;
       align-items: center;
       gap: 10px;
     }
 
-    .logo-badge {
-      width: 34px;
-      height: 34px;
+    .logo-circle {
+      width: 36px;
+      height: 36px;
       border-radius: 999px;
-      background: radial-gradient(circle at 30% 0%, #bbf7d0 0, #22c55e 40%, #16a34a 70%, #166534 100%);
+      background: #dcfce7;
       display: flex;
       align-items: center;
       justify-content: center;
-      color: #ecfdf5;
+      color: var(--green-dark);
       font-weight: 700;
-      font-size: 16px;
-      box-shadow: 0 8px 18px rgba(34, 197, 94, 0.45);
+      font-size: 18px;
     }
 
-    .logo-text h1 {
+    .header-title {
       margin: 0;
       font-size: 18px;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
+      font-weight: 700;
     }
 
-    .logo-text p {
+    .header-sub {
       margin: 0;
-      font-size: 11px;
+      font-size: 12px;
       color: var(--text-muted);
     }
 
-    .pill-status {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
+    .header-badge {
+      font-size: 11px;
       padding: 4px 10px;
       border-radius: var(--radius-pill);
       border: 1px solid var(--border);
-      font-size: 11px;
-      color: var(--text-muted);
       background: #f9fafb;
-    }
-
-    .pill-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 999px;
-      background: var(--primary);
+      color: var(--text-muted);
     }
 
     /* MAIN */
-    .app-main {
+    .main {
       flex: 1;
       display: flex;
       justify-content: center;
-      padding-bottom: 64px; /* espacio para la barra inferior */
+      padding: 10px 12px 70px; /* espacio para el menú abajo */
     }
 
-    .app-content {
+    .content {
       width: 100%;
       max-width: 480px;
-      padding: 10px 16px 16px;
     }
 
     /* VISTAS (PÁGINAS) */
     .view {
       display: none;
-      animation: fadeIn 0.2s ease-out;
     }
 
     .view-active {
       display: block;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(4px); }
-      to { opacity: 1; transform: translateY(0); }
     }
 
     /* CARDS */
@@ -160,276 +128,121 @@
       background: var(--bg-card);
       border-radius: var(--radius-lg);
       border: 1px solid var(--border);
-      box-shadow: var(--shadow-soft);
       padding: 12px 12px 10px;
       margin-bottom: 12px;
-    }
-
-    .card-header-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 6px;
     }
 
     .card-title {
-      font-size: 15px;
+      font-size: 16px;
       font-weight: 600;
+      margin: 0 0 4px;
     }
 
-    .card-sub {
-      font-size: 12px;
-      color: var(--text-muted);
-      margin: 2px 0 0;
-    }
-
-    .badge-soft {
-      padding: 3px 8px;
-      border-radius: var(--radius-pill);
-      border: 1px solid var(--border);
-      font-size: 10px;
-      color: var(--text-muted);
-      background: #f9fafb;
-    }
-
-    /* HERO (MAP VIEW) */
-    .hero-card {
-      background: linear-gradient(135deg, #ecfdf5, #f0fdf4);
-      border-radius: var(--radius-lg);
-      border: 1px solid #bbf7d0;
-      box-shadow: 0 12px 30px rgba(22, 163, 74, 0.12);
-      padding: 12px 12px 10px;
-      margin-bottom: 12px;
-    }
-
-    .hero-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 4px 9px;
-      border-radius: var(--radius-pill);
-      background: rgba(255, 255, 255, 0.9);
-      font-size: 11px;
-      color: #15803d;
-      border: 1px solid #bbf7d0;
-      margin-bottom: 6px;
-    }
-
-    .hero-title {
-      margin: 0;
-      font-size: 18px;
-      font-weight: 600;
-      color: #14532d;
-    }
-
-    .hero-title span {
-      color: #166534;
-    }
-
-    .hero-sub {
-      margin: 4px 0 8px;
-      font-size: 12px;
-      color: #166534;
-    }
-
-    .hero-kpis {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 6px;
-      font-size: 11px;
-    }
-
-    .kpi-card {
-      background: #ffffff;
-      border-radius: 14px;
-      padding: 6px 7px;
-      border: 1px solid #e5e7eb;
-    }
-
-    .kpi-label {
-      font-size: 10px;
+    .card-text {
+      margin: 0 0 8px;
+      font-size: 13px;
       color: var(--text-muted);
     }
 
-    .kpi-value {
-      font-weight: 600;
-    }
-
-    .kpi-tag {
-      font-size: 10px;
-      color: var(--primary-dark);
-    }
-
+    /* BOTONES */
     .btn-main {
       width: 100%;
       border-radius: var(--radius-pill);
       border: none;
       padding: 10px 14px;
-      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-      color: #f9fafb;
-      font-size: 14px;
+      background: var(--green);
+      color: white;
+      font-size: 15px;
       font-weight: 600;
       display: inline-flex;
-      justify-content: center;
       align-items: center;
+      justify-content: center;
       gap: 8px;
-      box-shadow: 0 8px 20px rgba(34, 197, 94, 0.35);
-      margin-bottom: 8px;
       cursor: pointer;
+      margin-bottom: 8px;
     }
 
     .btn-main:active {
-      transform: translateY(1px) scale(0.99);
-      box-shadow: 0 4px 14px rgba(34, 197, 94, 0.35);
+      transform: translateY(1px);
+      background: var(--green-dark);
     }
 
-    .btn-ghost {
+    .btn-small {
+      border-radius: var(--radius-pill);
+      border: none;
+      padding: 8px 12px;
+      background: var(--green);
+      color: white;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 4px;
+    }
+
+    .btn-small:active {
+      background: var(--green-dark);
+    }
+
+    .btn-simple {
       width: 100%;
       border-radius: var(--radius-pill);
-      border: 1px dashed var(--border);
-      padding: 9px 12px;
-      font-size: 12px;
-      color: var(--text-muted);
+      border: 1px solid var(--border);
+      padding: 8px 12px;
       background: #f9fafb;
-      display: inline-flex;
-      justify-content: center;
-      align-items: center;
-      gap: 6px;
+      font-size: 13px;
       cursor: pointer;
       margin-bottom: 8px;
-    }
-
-    /* CHIPS CATEGORÍAS */
-    .chip-scroll {
-      display: flex;
-      overflow-x: auto;
-      gap: 6px;
-      margin: 0 -12px 8px;
-      padding: 0 12px 4px;
-      scrollbar-width: none;
-    }
-
-    .chip-scroll::-webkit-scrollbar {
-      display: none;
-    }
-
-    .chip-cat {
-      flex: 0 0 auto;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 6px 10px;
-      border-radius: var(--radius-pill);
-      font-size: 11px;
-      border: 1px solid var(--border);
-      background: #f9fafb;
-      color: var(--text-muted);
-      cursor: pointer;
-    }
-
-    .chip-cat-dot {
-      width: 9px;
-      height: 9px;
-      border-radius: 999px;
-      background: var(--primary);
-    }
-
-    .chip-cat.active {
-      border-color: var(--primary);
-      background: var(--primary-soft);
-      color: #14532d;
-      font-weight: 500;
     }
 
     /* MAPA */
     #map {
       width: 100%;
-      height: 52vh;
+      height: 55vh;
       min-height: 260px;
-      border-radius: 16px;
+      border-radius: 14px;
       border: 1px solid var(--border);
       overflow: hidden;
+      margin-bottom: 6px;
     }
 
-    .map-meta {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      align-items: center;
-      gap: 8px;
-      margin-top: 6px;
-      font-size: 11px;
+    .map-info {
+      font-size: 12px;
       color: var(--text-muted);
+      margin-bottom: 4px;
     }
 
-    .map-status {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      padding: 4px 9px;
+    .status {
+      font-size: 12px;
+      padding: 6px 10px;
       border-radius: var(--radius-pill);
       background: #f9fafb;
       border: 1px solid var(--border);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 6px;
     }
 
     .status-dot {
-      width: 7px;
-      height: 7px;
+      width: 8px;
+      height: 8px;
       border-radius: 999px;
-      background: var(--primary);
+      background: var(--green);
     }
 
     .status-dot.error {
-      background: var(--danger);
-    }
-
-    .legend {
-      display: inline-flex;
-      flex-wrap: wrap;
-      gap: 6px;
-    }
-
-    .legend-item {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .legend-color {
-      width: 9px;
-      height: 9px;
-      border-radius: 3px;
-      background: var(--primary);
-    }
-
-    .legend-color.user {
-      background: var(--accent);
-    }
-
-    .legend-color.new {
-      background: #eab308;
-    }
-
-    .list-small {
-      margin: 6px 0 0;
-      padding-left: 16px;
-      font-size: 11px;
-      color: var(--text-muted);
-      max-height: 120px;
-      overflow-y: auto;
+      background: var(--red);
     }
 
     /* FORMULARIOS */
     .form-group {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      margin-bottom: 8px;
-      font-size: 12px;
+      margin-bottom: 10px;
+      font-size: 13px;
     }
 
     .form-label {
+      display: block;
+      margin-bottom: 3px;
       color: var(--text-muted);
     }
 
@@ -437,12 +250,12 @@
     input[type="datetime-local"],
     select,
     textarea {
-      border-radius: 12px;
+      width: 100%;
+      padding: 8px 10px;
+      border-radius: 10px;
       border: 1px solid var(--border);
-      padding: 7px 9px;
       background: #f9fafb;
-      color: var(--text-main);
-      font-size: 12px;
+      font-size: 13px;
       outline: none;
     }
 
@@ -454,150 +267,76 @@
     input:focus,
     select:focus,
     textarea:focus {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 1px var(--primary-soft);
+      border-color: var(--green);
       background: #ffffff;
     }
 
     textarea {
       resize: vertical;
       min-height: 60px;
-      max-height: 130px;
-    }
-
-    .btn-small {
-      border-radius: var(--radius-pill);
-      border: none;
-      padding: 8px 12px;
-      font-size: 12px;
-      font-weight: 600;
-      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-      color: #f9fafb;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      cursor: pointer;
     }
 
     .message {
-      font-size: 11px;
+      font-size: 12px;
       margin-top: 4px;
     }
 
+    .message-ok {
+      color: var(--green-dark);
+    }
+
+    .message-error {
+      color: var(--red);
+    }
+
+    .list {
+      margin: 6px 0 0;
+      padding-left: 18px;
+      font-size: 12px;
+      color: var(--text-muted);
+      max-height: 100px;
+      overflow-y: auto;
+    }
+
     /* PERFIL */
-    .profile-header {
+    .profile-row {
       display: flex;
       align-items: center;
       gap: 12px;
       margin-bottom: 10px;
     }
 
-    .avatar {
-      width: 44px;
-      height: 44px;
+    .profile-avatar {
+      width: 48px;
+      height: 48px;
       border-radius: 999px;
-      background: #ecfdf5;
+      background: #dcfce7;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 20px;
-      color: #166534;
-      border: 1px solid #bbf7d0;
+      font-size: 22px;
+      color: var(--green-dark);
     }
 
     .profile-name {
-      font-size: 15px;
+      font-size: 16px;
       font-weight: 600;
+      margin-bottom: 2px;
     }
 
-    .profile-tag {
-      font-size: 11px;
+    .profile-text {
+      font-size: 13px;
       color: var(--text-muted);
     }
 
-    .profile-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 6px;
-      margin-top: 8px;
-      font-size: 11px;
-    }
-
-    .profile-kpi {
-      background: #f9fafb;
-      border-radius: 12px;
-      padding: 6px 7px;
-      border: 1px solid var(--border);
-    }
-
-    .switch-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      font-size: 12px;
-      padding: 6px 0;
-      border-bottom: 1px solid #f3f4f6;
-    }
-
-    .switch-row:last-child {
-      border-bottom: none;
-    }
-
-    .switch-label span {
-      display: block;
-    }
-
-    .switch-label small {
-      color: var(--text-muted);
-      font-size: 11px;
-    }
-
-    .switch {
-      width: 36px;
-      height: 20px;
-      border-radius: 999px;
-      background: #e5e7eb;
-      position: relative;
-      cursor: pointer;
-    }
-
-    .switch-thumb {
-      width: 16px;
-      height: 16px;
-      border-radius: 999px;
-      background: #ffffff;
-      position: absolute;
-      top: 2px;
-      left: 2px;
-      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
-      transition: transform 0.15s ease, background 0.15s ease;
-    }
-
-    .switch.on {
-      background: var(--primary);
-    }
-
-    .switch.on .switch-thumb {
-      transform: translateX(16px);
-    }
-
-    footer {
-      font-size: 10px;
-      color: var(--text-muted);
-      text-align: center;
-      margin-top: 8px;
-    }
-
-    /* BOTTOM NAV */
+    /* MENÚ INFERIOR */
     .bottom-nav {
       position: fixed;
       bottom: 0;
       left: 0;
       right: 0;
-      z-index: 30;
-      background: var(--bg-nav);
+      background: #ffffff;
       border-top: 1px solid var(--border);
-      box-shadow: 0 -4px 16px rgba(15, 23, 42, 0.06);
     }
 
     .bottom-nav-inner {
@@ -605,10 +344,10 @@
       margin: 0 auto;
       display: flex;
       justify-content: space-around;
-      padding: 6px 16px 8px;
+      padding: 6px 10px;
     }
 
-    .nav-item {
+    .nav-btn {
       flex: 1;
       border: none;
       background: transparent;
@@ -616,349 +355,208 @@
       flex-direction: column;
       align-items: center;
       gap: 2px;
-      font-size: 11px;
-      color: var(--text-muted);
-      padding: 4px 4px;
+      padding: 4px;
       border-radius: 999px;
+      font-size: 12px;
+      color: var(--text-muted);
       cursor: pointer;
     }
 
     .nav-icon {
-      font-size: 18px;
+      font-size: 20px;
     }
 
-    .nav-item-active {
-      color: var(--primary-dark);
+    .nav-btn-active {
+      color: var(--green-dark);
       font-weight: 600;
-      background: var(--primary-soft);
-    }
-
-    @media (min-width: 768px) {
-      .app-shell {
-        align-items: center;
-      }
-      .app-main {
-        width: 100%;
-      }
+      background: #dcfce7;
     }
   </style>
 </head>
 <body>
-  <div class="app-shell">
-    <!-- HEADER -->
-    <header class="app-header">
-      <div class="app-header-inner">
-        <div class="logo-row">
-          <div class="logo-badge">RB</div>
-          <div class="logo-text">
-            <h1>RECYBOOM</h1>
-            <p>Tu app de reciclaje de barrio</p>
-          </div>
-        </div>
-        <div class="pill-status">
-          <span class="pill-dot"></span>
-          <span>Piloto · Santiago</span>
+  <div class="app">
+    <!-- ENCABEZADO -->
+    <header class="header">
+      <div class="header-left">
+        <div class="logo-circle">RB</div>
+        <div>
+          <h1 class="header-title">RECYBOOM</h1>
+          <p class="header-sub">Reciclar fácil para todos</p>
         </div>
       </div>
+      <div class="header-badge">Piloto · Santiago</div>
     </header>
 
-    <!-- MAIN -->
-    <main class="app-main">
-      <div class="app-content">
-        <!-- VIEW: MAPA -->
+    <!-- CONTENIDO -->
+    <main class="main">
+      <div class="content">
+        <!-- VISTA MAPA -->
         <section id="view-map" class="view view-active">
-          <section class="hero-card">
-            <div class="hero-badge">
-              ♻️ RECYBOOM · Mapa de depósitos
-            </div>
-            <h2 class="hero-title">
-              Encuentra dónde reciclar<br />
-              <span>por tipo de producto en tu ciudad.</span>
-            </h2>
-            <p class="hero-sub">
-              Ve tu ubicación, filtra por tipo de residuo y descubre depósitos cercanos. También puedes
-              sugerir nuevos puntos de reciclaje comunitario.
+          <div class="card">
+            <h2 class="card-title">Mapa de reciclaje</h2>
+            <p class="card-text">
+              Mira tu ubicación y algunos puntos de reciclaje de ejemplo. También puedes proponer un nuevo punto.
             </p>
 
             <button class="btn-main" id="btn-locate-top">
-              📍 Ver mi ubicación en el mapa
-            </button>
-
-            <div class="hero-kpis">
-              <div class="kpi-card">
-                <div class="kpi-label">Depósitos totales (demo)</div>
-                <div class="kpi-value" id="kpi-total-points">0</div>
-                <div class="kpi-tag">Base ficticia para mostrar la idea</div>
-              </div>
-              <div class="kpi-card">
-                <div class="kpi-label">Tipos de residuo</div>
-                <div class="kpi-value">8</div>
-                <div class="kpi-tag">Envases, vidrio, e-waste y más</div>
-              </div>
-              <div class="kpi-card">
-                <div class="kpi-label">Modo app móvil</div>
-                <div class="kpi-value">ON</div>
-                <div class="kpi-tag">Diseñada para tocar con el dedo</div>
-              </div>
-            </div>
-          </section>
-
-          <section class="card">
-            <div class="card-header-row">
-              <div>
-                <div class="card-title">Mapa por tipo de producto</div>
-                <p class="card-sub">
-                  Desliza las categorías y toca una para filtrar. Cada color representa un tipo de residuo.
-                </p>
-              </div>
-              <span class="badge-soft">Vista interactiva</span>
-            </div>
-
-            <div id="category-chips" class="chip-scroll"></div>
-
-            <button class="btn-ghost" id="btn-locate">
-              📍 Usar mi ubicación actual
+              📍 Ver mi ubicación
             </button>
 
             <div id="map"></div>
 
-            <div class="map-meta">
-              <div class="map-status" id="location-status">
-                <div class="status-dot" id="location-dot"></div>
-                <span>Listo para detectar tu ubicación.</span>
-              </div>
-              <div class="legend">
-                <div class="legend-item">
-                  <span class="legend-color user"></span><span>Yo</span>
-                </div>
-                <div class="legend-item">
-                  <span class="legend-color"></span><span>Depósito reciclaje</span>
-                </div>
-                <div class="legend-item">
-                  <span class="legend-color new"></span><span>Punto sugerido</span>
-                </div>
-              </div>
+            <div class="status" id="location-status">
+              <div id="location-dot" class="status-dot"></div>
+              <span>Ubicación lista para detectar.</span>
             </div>
 
-            <div class="form-group" style="margin-top:8px;">
-              <button class="btn-ghost" type="button">
-                👆 Toca el mapa para sugerir un nuevo punto
-              </button>
-              <div class="message" id="coordinates-label">
-                Aún no has tocado el mapa para seleccionar un punto.
-              </div>
-            </div>
+            <p class="map-info">
+              Toca en el mapa para sugerir un nuevo lugar donde reciclar.
+            </p>
+
+            <p id="coordinates-label" class="map-info">
+              Aún no has tocado el mapa.
+            </p>
 
             <div class="form-group">
-              <label class="form-label" for="stop-name">Nombre del punto</label>
+              <label class="form-label" for="stop-name">Nombre del lugar</label>
               <input
                 type="text"
                 id="stop-name"
-                placeholder="Ej: Punto limpio Junta de Vecinos El Bosque"
+                placeholder="Ej: Punto limpio Junta de Vecinos"
               />
             </div>
 
             <div class="form-group">
-              <label class="form-label" for="stop-type">Tipo de punto</label>
+              <label class="form-label" for="stop-type">Tipo de lugar</label>
               <select id="stop-type">
-                <option value="">Selecciona tipo</option>
-                <option value="Público municipal">Público municipal</option>
-                <option value="Punto privado vecinal">Punto privado vecinal</option>
-                <option value="Comercio / empresa">Comercio / empresa</option>
-                <option value="Educativo">Colegio / universidad</option>
+                <option value="">Selecciona una opción</option>
+                <option value="público">Público (municipal)</option>
+                <option value="vecinal">Vecinal</option>
+                <option value="comercio">Comercio</option>
+                <option value="colegio">Colegio / universidad</option>
               </select>
             </div>
 
             <div class="form-group">
-              <label class="form-label" for="stop-materials">Materiales / productos aceptados</label>
+              <label class="form-label" for="stop-materials">¿Qué se puede reciclar?</label>
               <textarea
                 id="stop-materials"
-                placeholder="Ej: Plástico PET, vidrio, cartón limpio, electrónicos..."
+                placeholder="Ej: Plástico, vidrio, papel..."
               ></textarea>
             </div>
 
             <button class="btn-small" id="btn-new-stop">
-              📍 Enviar sugerencia demo
+              📍 Guardar sugerencia (demo)
             </button>
-            <div class="message" id="new-stop-message"></div>
+            <div id="new-stop-message" class="message"></div>
 
-            <ul class="list-small" id="filtered-depots-list"></ul>
+            <h3 style="font-size:14px; margin:10px 0 4px;">Lugares de ejemplo</h3>
+            <ul id="example-list" class="list"></ul>
 
-            <ul class="list-small" id="suggested-points-list"></ul>
-          </section>
-
-          <footer>
-            RECYBOOM · Demo de mapa de reciclaje · Datos ficticios para mostrar la idea.
-          </footer>
+            <h3 style="font-size:14px; margin:10px 0 4px;">Tus sugerencias (solo hoy)</h3>
+            <ul id="suggested-list" class="list"></ul>
+          </div>
         </section>
 
-        <!-- VIEW: RETIRO -->
+        <!-- VISTA RETIRO -->
         <section id="view-retire" class="view">
-          <section class="card">
-            <div class="card-header-row">
-              <div>
-                <div class="card-title">Agendar retiro a domicilio (demo)</div>
-                <p class="card-sub">
-                  Simula cómo sería pedir que pasen a buscar tus residuos. Ideal para mostrar el flujo
-                  de la app sin necesidad de backend.
-                </p>
-              </div>
-              <span class="badge-soft">Modo demo</span>
-            </div>
+          <div class="card">
+            <h2 class="card-title">Pedir retiro (demo)</h2>
+            <p class="card-text">
+              Aquí puedes simular que pides un retiro de reciclaje. No se envía a ningún lado, es solo para mostrar la idea.
+            </p>
 
             <div class="form-group">
-              <label class="form-label" for="pickup-address">Dirección de retiro</label>
+              <label class="form-label" for="pickup-address">Dirección</label>
               <input
                 type="text"
                 id="pickup-address"
-                placeholder="Ej: Pasaje Los Robles 456, Puente Alto"
+                placeholder="Ej: Calle 123, comuna"
               />
             </div>
 
             <div class="form-group">
-              <label class="form-label" for="pickup-date">Fecha y horario</label>
+              <label class="form-label" for="pickup-date">Día y hora</label>
               <input type="datetime-local" id="pickup-date" />
             </div>
 
             <div class="form-group">
-              <label class="form-label" for="pickup-material">Tipo de producto</label>
-              <select id="pickup-material">
-                <option value="">Selecciona tipo</option>
-                <option value="mixto">Mixto (envases varios)</option>
+              <label class="form-label" for="pickup-type">Qué quieres reciclar</label>
+              <select id="pickup-type">
+                <option value="">Selecciona una opción</option>
+                <option value="mixto">Mezcla de envases</option>
                 <option value="plastico">Plásticos</option>
                 <option value="vidrio">Vidrio</option>
-                <option value="papel_carton">Papel y cartón</option>
-                <option value="electro">Electrónicos / e-waste</option>
-                <option value="pilas">Pilas y baterías</option>
-                <option value="organico">Orgánicos / compost</option>
-                <option value="textil">Ropa / textil</option>
+                <option value="papel">Papel / cartón</option>
+                <option value="electro">Electrónicos</option>
+                <option value="pilas">Pilas</option>
               </select>
             </div>
 
             <div class="form-group">
-              <label class="form-label" for="pickup-notes">Notas para el retiro (opcional)</label>
+              <label class="form-label" for="pickup-notes">Comentario (opcional)</label>
               <input
                 type="text"
                 id="pickup-notes"
-                placeholder="Portón negro, dejar en conserjería, perro amistoso, etc."
+                placeholder="Ej: Casa blanca, portón café..."
               />
             </div>
 
             <button class="btn-small" id="btn-pickup">
-              ✅ Confirmar retiro demo
+              ✅ Confirmar retiro (demo)
             </button>
-            <div class="message" id="pickup-message"></div>
-          </section>
-
-          <section class="card">
-            <div class="card-header-row">
-              <div>
-                <div class="card-title">¿Cómo funcionaría en producción?</div>
-                <p class="card-sub">
-                  En una versión real, este flujo se conectaría a un backend (por ejemplo Node, Firebase,
-                  Supabase) que guarda tus solicitudes, asigna un vehículo o reciclador y te envía
-                  el comprobante por WhatsApp o correo.
-                </p>
-              </div>
-            </div>
-          </section>
+            <div id="pickup-message" class="message"></div>
+          </div>
         </section>
 
-        <!-- VIEW: PERFIL -->
+        <!-- VISTA PERFIL -->
         <section id="view-profile" class="view">
-          <section class="card">
-            <div class="card-header-row">
-              <div>
-                <div class="card-title">Mi perfil RECYBOOM</div>
-                <p class="card-sub">
-                  Vista de ejemplo del perfil de usuario. Aquí podrías mostrar datos reales obtenidos desde base de datos.
-                </p>
-              </div>
-            </div>
-
-            <div class="profile-header">
-              <div class="avatar">R</div>
+          <div class="card">
+            <h2 class="card-title">Mi perfil</h2>
+            <div class="profile-row">
+              <div class="profile-avatar">🙂</div>
               <div>
                 <div class="profile-name">Invitado RECYBOOM</div>
-                <div class="profile-tag">Cuenta demo · Nivel: Eco principiante</div>
+                <div class="profile-text">Cuenta de prueba</div>
               </div>
             </div>
-
-            <div class="profile-grid">
-              <div class="profile-kpi">
-                <div class="kpi-label">Retiros realizados</div>
-                <div class="kpi-value">0</div>
-                <div class="kpi-tag">Comenzando</div>
-              </div>
-              <div class="profile-kpi">
-                <div class="kpi-label">Kilos reciclados</div>
-                <div class="kpi-value">0,0 kg</div>
-                <div class="kpi-tag">Se actualizará con tus datos</div>
-              </div>
-              <div class="profile-kpi">
-                <div class="kpi-label">Depósitos sugeridos</div>
-                <div class="kpi-value">0</div>
-                <div class="kpi-tag">Desde esta app demo</div>
-              </div>
-            </div>
-          </section>
-
-          <section class="card">
-            <div class="card-title">Preferencias de notificación</div>
-            <p class="card-sub">
-              Ejemplo de ajustes que podría personalizar cada usuario.
+            <p class="card-text">
+              Aquí podrías ver en el futuro:
             </p>
+            <ul class="list">
+              <li>Cuántas veces has reciclado.</li>
+              <li>Qué materiales reciclas más.</li>
+              <li>Tu impacto ambiental estimado.</li>
+            </ul>
+          </div>
 
-            <div class="switch-row">
-              <div class="switch-label">
-                <span>Recordatorios de retiro</span>
-                <small>Recibe un mensaje antes de cada retiro agendado.</small>
-              </div>
-              <div class="switch on" data-switch>
-                <div class="switch-thumb"></div>
-              </div>
-            </div>
-
-            <div class="switch-row">
-              <div class="switch-label">
-                <span>Resumen mensual</span>
-                <small>Te enviamos tus kilos reciclados y CO₂ evitado.</small>
-              </div>
-              <div class="switch on" data-switch>
-                <div class="switch-thumb"></div>
-              </div>
-            </div>
-
-            <div class="switch-row">
-              <div class="switch-label">
-                <span>Alertas de nuevos puntos</span>
-                <small>Cuando se habiliten depósitos cerca de tu casa.</small>
-              </div>
-              <div class="switch on" data-switch>
-                <div class="switch-thumb"></div>
-              </div>
-            </div>
-          </section>
-
-          <footer>
-            RECYBOOM · Esta vista de perfil es solo un ejemplo visual. Los datos se conectarían a tu cuenta real.
-          </footer>
+          <div class="card">
+            <h2 class="card-title">Sobre la app</h2>
+            <p class="card-text">
+              RECYBOOM quiere hacer el reciclaje algo simple:
+            </p>
+            <ul class="list">
+              <li>Ver lugares cercanos para reciclar.</li>
+              <li>Proponer nuevos puntos de reciclaje.</li>
+              <li>Simular retiros a domicilio.</li>
+            </ul>
+          </div>
         </section>
       </div>
     </main>
 
-    <!-- BOTTOM NAV -->
+    <!-- MENÚ ABAJO -->
     <nav class="bottom-nav">
       <div class="bottom-nav-inner">
-        <button class="nav-item nav-item-active" data-view-target="map">
+        <button class="nav-btn nav-btn-active" data-view="map">
           <span class="nav-icon">🗺️</span>
           <span>Mapa</span>
         </button>
-        <button class="nav-item" data-view-target="retire">
+        <button class="nav-btn" data-view="retire">
           <span class="nav-icon">🚚</span>
           <span>Retiro</span>
         </button>
-        <button class="nav-item" data-view-target="profile">
+        <button class="nav-btn" data-view="profile">
           <span class="nav-icon">👤</span>
           <span>Perfil</span>
         </button>
@@ -975,257 +573,105 @@
 
   <script>
     document.addEventListener("DOMContentLoaded", function () {
-      /* ------------ ELEMENTOS BÁSICOS ------------ */
-      const viewMap = document.getElementById("view-map");
-      const viewRetire = document.getElementById("view-retire");
-      const viewProfile = document.getElementById("view-profile");
-      const navItems = document.querySelectorAll(".nav-item");
+      /* --------- NAVEGACIÓN SIMPLE --------- */
+      const views = {
+        map: document.getElementById("view-map"),
+        retire: document.getElementById("view-retire"),
+        profile: document.getElementById("view-profile"),
+      };
+      const navButtons = document.querySelectorAll(".nav-btn");
 
-      // Map / geolocalización
+      function showView(name) {
+        Object.values(views).forEach((v) => v.classList.remove("view-active"));
+        views[name].classList.add("view-active");
+
+        navButtons.forEach((btn) => {
+          if (btn.dataset.view === name) {
+            btn.classList.add("nav-btn-active");
+          } else {
+            btn.classList.remove("nav-btn-active");
+          }
+        });
+
+        if (name === "map" && map) {
+          setTimeout(() => map.invalidateSize(), 200);
+        }
+      }
+
+      navButtons.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          showView(btn.dataset.view);
+        });
+      });
+
+      /* --------- MAPA BÁSICO --------- */
       const locationStatus = document.getElementById("location-status");
       const locationDot = document.getElementById("location-dot");
-      const kpiTotalPoints = document.getElementById("kpi-total-points");
       const coordinatesLabel = document.getElementById("coordinates-label");
-      const filteredDepotsList = document.getElementById("filtered-depots-list");
-      const suggestedPointsList = document.getElementById("suggested-points-list");
+      const exampleList = document.getElementById("example-list");
+      const suggestedList = document.getElementById("suggested-list");
 
-      const btnLocate = document.getElementById("btn-locate");
       const btnLocateTop = document.getElementById("btn-locate-top");
       const btnNewStop = document.getElementById("btn-new-stop");
       const newStopMessage = document.getElementById("new-stop-message");
 
-      // Retiro
-      const btnPickup = document.getElementById("btn-pickup");
-      const pickupMessage = document.getElementById("pickup-message");
-
-      // Categorías
-      const chipsContainer = document.getElementById("category-chips");
-
-      // Switches perfil
-      const switches = document.querySelectorAll("[data-switch]");
-
-      /* ------------ ESTADO ------------ */
-      let activeView = "map";
-      let activeCategory = "all";
       let map;
       let userMarker = null;
       let newStopMarker = null;
       let newStopLatLng = null;
-      let depotMarkers = [];
 
-      /* ------------ DATOS: CATEGORÍAS Y DEPÓSITOS ------------ */
-      const categories = {
-        all: { id: "all", label: "Todos", emoji: "✨", color: "#9ca3af" },
-        mixto: { id: "mixto", label: "Envases mixtos", emoji: "♻️", color: "#22c55e" },
-        plastico: { id: "plastico", label: "Plásticos", emoji: "🧴", color: "#16a34a" },
-        vidrio: { id: "vidrio", label: "Vidrio", emoji: "🍾", color: "#0ea5e9" },
-        papel_carton: { id: "papel_carton", label: "Papel y cartón", emoji: "📦", color: "#eab308" },
-        electro: { id: "electro", label: "Electrónicos", emoji: "🔌", color: "#a855f7" },
-        pilas: { id: "pilas", label: "Pilas y baterías", emoji: "🔋", color: "#f97316" },
-        organico: { id: "organico", label: "Orgánicos", emoji: "🌱", color: "#84cc16" },
-        textil: { id: "textil", label: "Textil / ropa", emoji: "👕", color: "#ec4899" },
-      };
-
-      const depots = [
+      // Lugares de ejemplo
+      const examplePlaces = [
         {
           name: "Punto Limpio Plaza Ñuñoa",
-          barrio: "Ñuñoa",
-          type: "Público municipal",
-          products: ["mixto", "plastico", "papel_carton", "vidrio"],
+          info: "Plástico, vidrio, papel",
           lat: -33.455,
           lng: -70.598,
         },
         {
-          name: "EcoDepósito Mall Aventura",
-          barrio: "La Florida",
-          type: "Comercio / empresa",
-          products: ["mixto", "plastico", "papel_carton", "vidrio", "electro"],
+          name: "EcoDepósito La Florida",
+          info: "Envases mixtos",
           lat: -33.482,
           lng: -70.651,
         },
         {
-          name: "Metro Ñuble - Punto Envases",
-          barrio: "Santiago",
-          type: "Público municipal",
-          products: ["plastico", "papel_carton"],
-          lat: -33.473,
-          lng: -70.629,
-        },
-        {
-          name: "Colegio Verde Sustentable",
-          barrio: "Providencia",
-          type: "Educativo",
-          products: ["papel_carton", "plastico", "textil"],
-          lat: -33.43,
-          lng: -70.61,
-        },
-        {
-          name: "RecyTech - Electrónicos",
-          barrio: "Santiago Centro",
-          type: "Centro e-waste",
-          products: ["electro"],
+          name: "Reciclaje Centro",
+          info: "Pilas y electrónicos",
           lat: -33.445,
           lng: -70.65,
         },
-        {
-          name: "Punto Pilas Plaza de Armas",
-          barrio: "Santiago Centro",
-          type: "Punto pilas",
-          products: ["pilas"],
-          lat: -33.437,
-          lng: -70.6505,
-        },
-        {
-          name: "Huerto Urbano EcoCompost",
-          barrio: "La Reina",
-          type: "Compostaje comunitario",
-          products: ["organico"],
-          lat: -33.441,
-          lng: -70.544,
-        },
-        {
-          name: "Ropero Solidario San Joaquín",
-          barrio: "San Joaquín",
-          type: "Textil solidario",
-          products: ["textil"],
-          lat: -33.493,
-          lng: -70.6295,
-        },
-        {
-          name: "Junta de Vecinos Los Alerces",
-          barrio: "La Florida",
-          type: "Punto privado vecinal",
-          products: ["plastico", "vidrio"],
-          lat: -33.507,
-          lng: -70.566,
-        },
-        {
-          name: "Campus Sustentable UM",
-          barrio: "Ñuñoa",
-          type: "Educativo",
-          products: ["mixto", "papel_carton", "electro"],
-          lat: -33.457,
-          lng: -70.582,
-        },
-        {
-          name: "Mercado Barrio Italia",
-          barrio: "Providencia",
-          type: "Comercio / empresa",
-          products: ["mixto", "vidrio", "papel_carton", "textil"],
-          lat: -33.442,
-          lng: -70.622,
-        },
-        {
-          name: "Centro de Reciclaje Lo Espejo",
-          barrio: "Lo Espejo",
-          type: "Público municipal",
-          products: ["mixto", "plastico", "vidrio", "papel_carton", "electro", "pilas"],
-          lat: -33.52,
-          lng: -70.689,
-        },
       ];
 
-      /* ------------ VISTAS / NAV ------------ */
-      function showView(viewId) {
-        activeView = viewId;
-        viewMap.classList.remove("view-active");
-        viewRetire.classList.remove("view-active");
-        viewProfile.classList.remove("view-active");
-
-        if (viewId === "map") viewMap.classList.add("view-active");
-        if (viewId === "retire") viewRetire.classList.add("view-active");
-        if (viewId === "profile") viewProfile.classList.add("view-active");
-
-        navItems.forEach((item) => {
-          if (item.dataset.viewTarget === viewId) {
-            item.classList.add("nav-item-active");
-          } else {
-            item.classList.remove("nav-item-active");
-          }
-        });
-
-        // Cuando volvemos al mapa, refrescamos tamaño para que Leaflet no se rompa
-        if (viewId === "map" && map) {
-          setTimeout(() => {
-            map.invalidateSize();
-          }, 200);
-        }
-      }
-
-      navItems.forEach((item) => {
-        item.addEventListener("click", () => {
-          const target = item.dataset.viewTarget;
-          showView(target);
-        });
+      // Inicializar mapa
+      map = L.map("map", {
+        center: [-33.45, -70.66],
+        zoom: 12,
       });
 
-      /* ------------ MAPA ------------ */
-      function initMap() {
-        map = L.map("map", {
-          center: [-33.45, -70.66],
-          zoom: 12,
-        });
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 19,
+        attribution: "&copy; OpenStreetMap contributors",
+      }).addTo(map);
 
-        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-          maxZoom: 19,
-          attribution: "&copy; OpenStreetMap contributors",
-        }).addTo(map);
+      // Mostrar lugares de ejemplo
+      examplePlaces.forEach((p) => {
+        L.circleMarker([p.lat, p.lng], {
+          radius: 7,
+          color: "#22c55e",
+          fillColor: "#22c55e",
+          fillOpacity: 0.9,
+        })
+          .addTo(map)
+          .bindPopup("<strong>" + p.name + "</strong><br><small>" + p.info + "</small>");
 
-        // Crear markers de depósitos
-        depotMarkers = [];
-        depots.forEach((depot) => {
-          const mainCatId = depot.products[0] || "mixto";
-          const catConfig = categories[mainCatId] || categories["mixto"];
-          const color = catConfig.color;
+        const li = document.createElement("li");
+        li.textContent = p.name + " – " + p.info;
+        exampleList.appendChild(li);
+      });
 
-          const marker = L.circleMarker([depot.lat, depot.lng], {
-            radius: 7,
-            color: color,
-            fillColor: color,
-            fillOpacity: 0.95,
-          }).addTo(map);
-
-          const productsLabels = depot.products
-            .map((p) => categories[p]?.label || p)
-            .join(", ");
-
-          marker.bindPopup(
-            `<strong>${depot.name}</strong><br/>
-             <small>${depot.barrio} · ${depot.type}</small><br/>
-             <small>Productos: ${productsLabels}</small>`
-          );
-
-          depotMarkers.push({ depot, marker });
-        });
-
-        kpiTotalPoints.textContent = depots.length.toString();
-
-        // Click en mapa para sugerir punto
-        map.on("click", (e) => {
-          newStopLatLng = e.latlng;
-
-          if (newStopMarker) map.removeLayer(newStopMarker);
-
-          newStopMarker = L.circleMarker(newStopLatLng, {
-            radius: 6,
-            color: "#eab308",
-            fillColor: "#eab308",
-            fillOpacity: 0.9,
-          }).addTo(map);
-
-          newStopMarker.bindPopup("Nuevo punto sugerido aquí").openPopup();
-
-          coordinatesLabel.textContent =
-            "Coordenadas seleccionadas: " +
-            newStopLatLng.lat.toFixed(5) +
-            ", " +
-            newStopLatLng.lng.toFixed(5);
-        });
-      }
-
-      function updateLocationStatus(message, isError = false) {
+      function updateLocationStatus(message, error) {
         locationStatus.querySelector("span").textContent = message;
-        if (isError) {
+        if (error) {
           locationDot.classList.add("error");
         } else {
           locationDot.classList.remove("error");
@@ -1234,197 +680,125 @@
 
       function locateUser() {
         if (!navigator.geolocation) {
-          updateLocationStatus("Tu navegador no soporta geolocalización.", true);
+          updateLocationStatus("Tu dispositivo no tiene geolocalización.", true);
           return;
         }
 
-        updateLocationStatus("Buscando tu ubicación…");
+        updateLocationStatus("Buscando tu ubicación...", false);
 
         navigator.geolocation.getCurrentPosition(
-          (position) => {
-            const { latitude, longitude } = position.coords;
-            const latLng = [latitude, longitude];
+          (pos) => {
+            const lat = pos.coords.latitude;
+            const lng = pos.coords.longitude;
 
             if (userMarker) map.removeLayer(userMarker);
 
-            userMarker = L.circleMarker(latLng, {
-              radius: 7,
+            userMarker = L.circleMarker([lat, lng], {
+              radius: 8,
               color: "#0ea5e9",
               fillColor: "#0ea5e9",
-              fillOpacity: 0.95,
-            }).addTo(map);
+              fillOpacity: 0.9,
+            })
+              .addTo(map)
+              .bindPopup("Estás aquí");
 
-            userMarker.bindPopup("Estás aquí 🧍").openPopup();
-
-            map.setView(latLng, 14);
-            updateLocationStatus("Ubicación detectada. Explora los puntos cercanos.");
+            map.setView([lat, lng], 14);
+            updateLocationStatus("Ubicación detectada.", false);
           },
           () => {
-            updateLocationStatus("No pudimos obtener tu ubicación (permiso denegado).", true);
+            updateLocationStatus("No se pudo obtener la ubicación.", true);
           }
         );
       }
 
-      btnLocate.addEventListener("click", locateUser);
       btnLocateTop.addEventListener("click", () => {
         showView("map");
-        document.getElementById("map").scrollIntoView({ behavior: "smooth", block: "start" });
-        setTimeout(locateUser, 500);
+        locateUser();
       });
 
-      /* ------------ CATEGORÍAS / FILTRO ------------ */
-      function renderCategoryChips() {
-        chipsContainer.innerHTML = "";
-        Object.values(categories).forEach((cat) => {
-          const chip = document.createElement("button");
-          chip.type = "button";
-          chip.className = "chip-cat" + (cat.id === "all" ? " active" : "");
-          chip.dataset.category = cat.id;
+      // Tocar mapa para nuevo punto
+      map.on("click", (e) => {
+        newStopLatLng = e.latlng;
 
-          const dot = document.createElement("span");
-          dot.className = "chip-cat-dot";
-          dot.style.backgroundColor = cat.color;
+        if (newStopMarker) map.removeLayer(newStopMarker);
 
-          const label = document.createElement("span");
-          label.textContent = `${cat.emoji} ${cat.label}`;
+        newStopMarker = L.circleMarker(newStopLatLng, {
+          radius: 7,
+          color: "#eab308",
+          fillColor: "#eab308",
+          fillOpacity: 0.9,
+        })
+          .addTo(map)
+          .bindPopup("Nuevo punto sugerido aquí")
+          .openPopup();
 
-          chip.appendChild(dot);
-          chip.appendChild(label);
+        coordinatesLabel.textContent =
+          "Punto elegido: " +
+          newStopLatLng.lat.toFixed(5) +
+          ", " +
+          newStopLatLng.lng.toFixed(5);
+      });
 
-          chip.addEventListener("click", () => {
-            activeCategory = cat.id;
-            updateActiveChips();
-            updateMarkersVisibility();
-            renderFilteredDepotsList();
-          });
-
-          chipsContainer.appendChild(chip);
-        });
-      }
-
-      function updateActiveChips() {
-        const chipElements = chipsContainer.querySelectorAll(".chip-cat");
-        chipElements.forEach((chip) => {
-          if (chip.dataset.category === activeCategory) {
-            chip.classList.add("active");
-          } else {
-            chip.classList.remove("active");
-          }
-        });
-      }
-
-      function updateMarkersVisibility() {
-        depotMarkers.forEach(({ depot, marker }) => {
-          const show =
-            activeCategory === "all" || depot.products.includes(activeCategory);
-          if (show) {
-            if (!map.hasLayer(marker)) marker.addTo(map);
-          } else {
-            if (map.hasLayer(marker)) map.removeLayer(marker);
-          }
-        });
-      }
-
-      function renderFilteredDepotsList() {
-        filteredDepotsList.innerHTML = "";
-        depotMarkers.forEach(({ depot }) => {
-          const matches =
-            activeCategory === "all" || depot.products.includes(activeCategory);
-          if (matches) {
-            const li = document.createElement("li");
-            const emojis = depot.products
-              .map((p) => categories[p]?.emoji || "")
-              .join(" ");
-            li.textContent = `${emojis} ${depot.name} · ${depot.barrio} (${depot.type})`;
-            filteredDepotsList.appendChild(li);
-          }
-        });
-        if (!filteredDepotsList.children.length) {
-          const li = document.createElement("li");
-          li.textContent = "No hay depósitos para este tipo de producto en esta demo.";
-          filteredDepotsList.appendChild(li);
-        }
-      }
-
-      /* ------------ SUGERIR PUNTO ------------ */
+      // Guardar sugerencia (solo en la lista)
       btnNewStop.addEventListener("click", () => {
         const name = document.getElementById("stop-name").value.trim();
         const type = document.getElementById("stop-type").value;
         const materials = document.getElementById("stop-materials").value.trim();
 
         if (!newStopLatLng) {
-          newStopMessage.textContent = "Primero toca el mapa para elegir la ubicación del punto.";
-          newStopMessage.style.color = "#ef4444";
-          return;
-        }
-        if (!name || !type) {
-          newStopMessage.textContent =
-            "Completa al menos el nombre y el tipo de punto para enviar la sugerencia.";
-          newStopMessage.style.color = "#ef4444";
+          newStopMessage.textContent = "Primero toca el mapa para elegir un lugar.";
+          newStopMessage.className = "message message-error";
           return;
         }
 
-        newStopMessage.style.color = "#16a34a";
-        newStopMessage.textContent =
-          "Sugerencia demo registrada ✅. En la app real se enviaría a revisión del equipo / municipio.";
+        if (!name || !type) {
+          newStopMessage.textContent = "Escribe el nombre del lugar y el tipo.";
+          newStopMessage.className = "message message-error";
+          return;
+        }
 
         const li = document.createElement("li");
         li.textContent =
-          `${name} (${type}) – ` +
+          name +
+          " (" +
+          type +
+          ") – " +
           newStopLatLng.lat.toFixed(4) +
           ", " +
           newStopLatLng.lng.toFixed(4);
-        suggestedPointsList.appendChild(li);
-
-        if (newStopMarker) {
-          const matText = materials || "Materiales por definir";
-          newStopMarker.bindPopup(
-            `<strong>${name}</strong><br/>
-             <small>${type}</small><br/>
-             <small>${matText}</small><br/>
-             <small>Punto sugerido (demo)</small>`
-          );
+        if (materials) {
+          li.textContent += " · " + materials;
         }
+        suggestedList.appendChild(li);
+
+        newStopMessage.textContent = "Sugerencia guardada (solo en esta demo).";
+        newStopMessage.className = "message message-ok";
 
         document.getElementById("stop-name").value = "";
         document.getElementById("stop-type").value = "";
         document.getElementById("stop-materials").value = "";
       });
 
-      /* ------------ RETIRO DEMO ------------ */
+      /* --------- RETIRO DEMO --------- */
+      const btnPickup = document.getElementById("btn-pickup");
+      const pickupMessage = document.getElementById("pickup-message");
+
       btnPickup.addEventListener("click", () => {
         const address = document.getElementById("pickup-address").value.trim();
         const date = document.getElementById("pickup-date").value;
-        const material = document.getElementById("pickup-material").value;
+        const type = document.getElementById("pickup-type").value;
 
-        if (!address || !date || !material) {
+        if (!address || !date || !type) {
           pickupMessage.textContent =
-            "Completa dirección, fecha y tipo de producto para simular tu retiro.";
-          pickupMessage.style.color = "#ef4444";
+            "Por favor completa dirección, día/hora y tipo de reciclaje.";
+          pickupMessage.className = "message message-error";
           return;
         }
 
-        const materialLabel = categories[material]?.label || "residuo seleccionado";
-        pickupMessage.style.color = "#16a34a";
         pickupMessage.textContent =
-          "Solicitud demo registrada ✅. En la app real se programaría un retiro para tus " +
-          materialLabel +
-          " en RECYBOOM.";
+          "Retiro guardado (demo). En una app real, esta solicitud se enviaría al sistema de reciclaje.";
+        pickupMessage.className = "message message-ok";
       });
-
-      /* ------------ SWITCHES PERFIL ------------ */
-      switches.forEach((sw) => {
-        sw.addEventListener("click", () => {
-          sw.classList.toggle("on");
-        });
-      });
-
-      /* ------------ INIT ------------ */
-      initMap();
-      renderCategoryChips();
-      updateActiveChips();
-      updateMarkersVisibility();
-      renderFilteredDepotsList();
     });
   </script>
 </body>
