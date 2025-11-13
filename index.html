@@ -2,75 +2,1319 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>AulaPudu</title>
-  <link rel="stylesheet" href="/css/styles.css"/>
+  <title>RECYBOOM - Reciclaje Inteligente</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Leaflet CSS -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+    crossorigin=""
+  />
+
+  <style>
+    :root {
+      --bg: #050816;
+      --bg-alt: #0b1120;
+      --card-bg: #020617;
+      --primary: #22c55e;
+      --primary-soft: rgba(34, 197, 94, 0.12);
+      --accent: #38bdf8;
+      --text-main: #f9fafb;
+      --text-muted: #9ca3af;
+      --danger: #f97373;
+      --border-subtle: rgba(148, 163, 184, 0.4);
+      --shadow-soft: 0 18px 40px rgba(15, 23, 42, 0.85);
+      --radius-lg: 18px;
+      --radius-xl: 22px;
+      --radius-pill: 999px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #0f172a 0, #020617 40%, #020617 100%);
+      color: var(--text-main);
+      min-height: 100vh;
+    }
+
+    /* Layout base */
+    .page {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 18px 16px 40px;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 16px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 14px;
+      background: radial-gradient(circle at 30% 0%, #4ade80 0, #22c55e 30%, #0f766e 70%, #020617 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 10px 30px rgba(34, 197, 94, 0.6);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .logo-icon::after {
+      content: "";
+      position: absolute;
+      inset: 2px;
+      border-radius: 12px;
+      border: 1px solid rgba(15, 23, 42, 0.55);
+    }
+
+    .logo-icon span {
+      font-size: 20px;
+      font-weight: 700;
+      color: #ecfdf5;
+    }
+
+    .logo-text h1 {
+      font-size: 20px;
+      margin: 0;
+      letter-spacing: 0.05em;
+    }
+
+    .logo-text p {
+      margin: 0;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 12px;
+    }
+
+    .pill {
+      padding: 4px 10px;
+      border-radius: var(--radius-pill);
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--text-muted);
+    }
+
+    .pill-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #22c55e;
+      box-shadow: 0 0 10px #22c55e;
+    }
+
+    .btn-primary {
+      padding: 7px 16px;
+      border-radius: var(--radius-pill);
+      border: none;
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      color: #ecfdf5;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 12px 24px rgba(34, 197, 94, 0.4);
+      transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.1s ease;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 16px 30px rgba(34, 197, 94, 0.5);
+      background: linear-gradient(135deg, #22c55e, #15803d);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+      box-shadow: 0 10px 18px rgba(34, 197, 94, 0.35);
+    }
+
+    /* HERO */
+    .hero {
+      background: radial-gradient(circle at top left, rgba(34, 197, 94, 0.12), transparent 40%),
+                  radial-gradient(circle at top right, rgba(56, 189, 248, 0.12), transparent 35%),
+                  rgba(15, 23, 42, 0.96);
+      border-radius: var(--radius-xl);
+      padding: 20px 18px 18px;
+      border: 1px solid var(--border-subtle);
+      box-shadow: var(--shadow-soft);
+      margin-bottom: 16px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.5fr) minmax(0, 1.1fr);
+      gap: 16px;
+      align-items: center;
+    }
+
+    @media (max-width: 880px) {
+      .hero-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+      .hero {
+        padding: 18px 14px 14px;
+      }
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: var(--radius-pill);
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(148, 163, 184, 0.45);
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+
+    .hero-badge span {
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    .hero-title {
+      font-size: 22px;
+      margin: 0 0 6px;
+      line-height: 1.2;
+    }
+
+    .hero-title span {
+      color: var(--primary);
+    }
+
+    .hero-subtitle {
+      margin: 0 0 12px;
+      font-size: 13px;
+      color: var(--text-muted);
+      max-width: 420px;
+    }
+
+    .hero-cta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .hero-note {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .impact-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      font-size: 11px;
+      margin-top: 10px;
+    }
+
+    @media (max-width: 600px) {
+      .impact-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    .impact-card {
+      background: rgba(15, 23, 42, 0.9);
+      border-radius: 14px;
+      padding: 8px 9px;
+      border: 1px solid rgba(51, 65, 85, 0.9);
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .impact-label {
+      color: var(--text-muted);
+      font-size: 10px;
+    }
+
+    .impact-value {
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .impact-tag {
+      font-size: 10px;
+      color: var(--accent);
+    }
+
+    /* HERO SIDE PANEL */
+    .hero-card {
+      background: rgba(15, 23, 42, 0.92);
+      border-radius: 18px;
+      padding: 12px 12px 10px;
+      border: 1px solid var(--border-subtle);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      font-size: 11px;
+    }
+
+    .hero-chip {
+      padding: 3px 9px;
+      border-radius: var(--radius-pill);
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(148, 163, 184, 0.55);
+      color: var(--text-muted);
+    }
+
+    .hero-score {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .hero-score span {
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    .hero-list {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 8px;
+      font-size: 11px;
+      display: grid;
+      gap: 4px;
+    }
+
+    .hero-list li {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--text-muted);
+    }
+
+    .hero-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--primary);
+      box-shadow: 0 0 10px rgba(34, 197, 94, 0.6);
+    }
+
+    .mini-map-preview {
+      margin-top: 6px;
+      border-radius: 14px;
+      border: 1px solid rgba(51, 65, 85, 0.9);
+      background: radial-gradient(circle at 10% 0%, rgba(34, 197, 94, 0.2), transparent 45%),
+                  radial-gradient(circle at 90% 80%, rgba(56, 189, 248, 0.2), transparent 50%),
+                  #020617;
+      padding: 8px;
+      display: grid;
+      grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+      gap: 8px;
+      font-size: 10px;
+    }
+
+    @media (max-width: 880px) {
+      .mini-map-preview {
+        display: none;
+      }
+    }
+
+    .mini-map-left {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .mini-map-badge {
+      padding: 2px 6px;
+      border-radius: var(--radius-pill);
+      background: rgba(15, 23, 42, 0.9);
+      color: var(--accent);
+      border: 1px solid rgba(56, 189, 248, 0.5);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      width: fit-content;
+    }
+
+    .mini-map-right {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      align-items: flex-end;
+      justify-content: space-between;
+    }
+
+    .mini-dot-row {
+      display: flex;
+      gap: 4px;
+    }
+
+    .mini-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(148, 163, 184, 0.5);
+    }
+
+    .mini-dot.green {
+      background: #22c55e;
+      border-color: rgba(22, 163, 74, 0.7);
+    }
+
+    /* MAIN CONTENT */
+    .main-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.4fr) minmax(0, 1.8fr);
+      gap: 16px;
+      align-items: flex-start;
+    }
+
+    @media (max-width: 980px) {
+      .main-layout {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .card {
+      background: var(--bg-alt);
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--border-subtle);
+      padding: 14px 14px 12px;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .card-title {
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .card-subtitle {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .quick-actions {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    @media (max-width: 600px) {
+      .quick-actions {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .quick-card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 10px 10px 9px;
+      border: 1px solid rgba(51, 65, 85, 0.9);
+      display: grid;
+      gap: 4px;
+    }
+
+    .quick-title {
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .quick-desc {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 2px;
+    }
+
+    .chip {
+      padding: 3px 8px;
+      border-radius: var(--radius-pill);
+      border: 1px solid rgba(75, 85, 99, 0.9);
+      font-size: 10px;
+      color: var(--text-muted);
+      background: rgba(15, 23, 42, 0.95);
+    }
+
+    .chip.primary {
+      border-color: rgba(34, 197, 94, 0.7);
+      color: #bbf7d0;
+      background: rgba(22, 163, 74, 0.15);
+    }
+
+    /* MAP CARD */
+    #map {
+      width: 100%;
+      height: 410px;
+      border-radius: 16px;
+      border: 1px solid rgba(51, 65, 85, 0.9);
+      overflow: hidden;
+      margin-top: 6px;
+    }
+
+    .map-meta {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 6px;
+      gap: 8px;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .map-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 9px;
+      border-radius: var(--radius-pill);
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(100, 116, 139, 0.8);
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: var(--primary);
+      box-shadow: 0 0 10px rgba(34, 197, 94, 0.8);
+    }
+
+    .status-dot.error {
+      background: var(--danger);
+      box-shadow: 0 0 10px rgba(248, 113, 113, 0.9);
+    }
+
+    .legend {
+      display: inline-flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .legend-color {
+      width: 9px;
+      height: 9px;
+      border-radius: 3px;
+      background: #22c55e;
+    }
+
+    .legend-color.user {
+      background: #38bdf8;
+    }
+
+    .legend-color.new {
+      background: #facc15;
+    }
+
+    /* FORMS BELOW MAP */
+    .forms-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.4fr) minmax(0, 1.2fr);
+      gap: 12px;
+      margin-top: 12px;
+      font-size: 11px;
+    }
+
+    @media (max-width: 880px) {
+      .forms-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .form-card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 10px;
+      border: 1px solid rgba(51, 65, 85, 0.9);
+    }
+
+    .form-card h3 {
+      margin: 0 0 4px;
+      font-size: 12px;
+    }
+
+    .form-card p {
+      margin: 0 0 8px;
+      color: var(--text-muted);
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+
+    .form-control {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      font-size: 11px;
+    }
+
+    .form-control label {
+      color: var(--text-muted);
+    }
+
+    input[type="text"],
+    input[type="datetime-local"],
+    select,
+    textarea {
+      border-radius: 10px;
+      border: 1px solid rgba(75, 85, 99, 0.9);
+      padding: 6px 8px;
+      background: rgba(15, 23, 42, 0.98);
+      color: var(--text-main);
+      font-size: 11px;
+      outline: none;
+      transition: border 0.1s ease, box-shadow 0.1s ease;
+    }
+
+    input::placeholder,
+    textarea::placeholder {
+      color: rgba(148, 163, 184, 0.8);
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: rgba(34, 197, 94, 0.85);
+      box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.35);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 60px;
+      max-height: 120px;
+    }
+
+    .btn-ghost {
+      padding: 6px 10px;
+      border-radius: var(--radius-pill);
+      border: 1px dashed rgba(148, 163, 184, 0.8);
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 11px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+    }
+
+    .btn-ghost span {
+      font-size: 13px;
+    }
+
+    .btn-small-primary {
+      margin-top: 4px;
+      padding: 5px 10px;
+      border-radius: var(--radius-pill);
+      border: none;
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      color: #ecfdf5;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .muted {
+      color: var(--text-muted);
+      font-size: 10px;
+    }
+
+    .points-list {
+      margin: 6px 0 0;
+      padding-left: 14px;
+      font-size: 10px;
+      color: var(--text-muted);
+      max-height: 130px;
+      overflow: auto;
+    }
+
+    .points-list li {
+      margin-bottom: 3px;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 6px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      font-size: 10px;
+      color: var(--text-muted);
+    }
+
+    footer {
+      margin-top: 22px;
+      font-size: 10px;
+      color: var(--text-muted);
+      text-align: center;
+    }
+  </style>
 </head>
 <body>
-  <header class="bar">
-    <div class="brand">
-      <img src="/assets/pudu.svg" alt="AulaPudu" class="logo"/>
-      <span>AulaPudu</span>
-    </div>
-    <div class="room-info">
-      <label>Room ID</label>
-      <input id="roomId" placeholder="ej. 6A-2025" />
-      <label>Nombre</label>
-      <input id="displayName" placeholder="Tu nombre" />
-      <label class="chk"><input type="checkbox" id="presenterMode"/> Presentador</label>
-      <button id="btnJoin">Unirse</button>
-      <button id="btnCreate">Crear sala</button>
-    </div>
-  </header>
-
-  <main class="grid">
-    <section class="left">
-      <div class="card">
-        <h3>QR para unirse</h3>
-        <canvas id="qrCanvas" width="300" height="300"></canvas>
-        <p class="hint">Escanea para unirte desde el celular</p>
-      </div>
-
-      <div class="card" id="presenterTools" hidden>
-        <h3>Herramientas del presentador</h3>
-        <input id="addSlideUrl" placeholder="URL de imagen o video (mp4, webm)"/>
-        <button id="btnAddSlide">Agregar a la presentación</button>
-        <div class="controls">
-          <button id="btnPrev">◀ Anterior</button>
-          <button id="btnNext">Siguiente ▶</button>
-          <button id="btnClear">Limpiar</button>
-          <button id="btnFullscreen">Pantalla completa</button>
+  <div class="page">
+    <header>
+      <div class="logo">
+        <div class="logo-icon">
+          <span>RB</span>
         </div>
-        <div class="uploader">
-          <h4>Subir examen</h4>
-          <input type="file" id="examFile"/>
-          <button id="btnUploadExam">Subir</button>
-          <p class="hint">Se notificará a todos en tiempo real</p>
+        <div class="logo-text">
+          <h1>RECYBOOM</h1>
+          <p>Reciclaje inteligente, cerca de tu casa</p>
         </div>
       </div>
+      <div class="header-actions">
+        <div class="pill">
+          <span class="pill-dot"></span>
+          <span>Activa en Santiago · Piloto</span>
+        </div>
+        <button class="btn-primary" id="btn-locate">
+          📍 Ubicarme ahora
+        </button>
+      </div>
+    </header>
 
-      <div class="card">
-        <h3>Usuarios conectados</h3>
-        <ul id="userList"></ul>
+    <!-- HERO -->
+    <section class="hero">
+      <div class="hero-grid">
+        <div>
+          <div class="hero-badge">
+            ♻️ <span>RECYBOOM</span> · Tu hub local de puntos limpios
+          </div>
+          <h2 class="hero-title">
+            Empieza a reciclar sin enredo.<br />
+            <span>Mapa, retiro a domicilio e impacto en tiempo real.</span>
+          </h2>
+          <p class="hero-subtitle">
+            RECYBOOM te muestra los puntos de reciclaje más cercanos, te ayuda a pedir retiro en casa y registra cuánto estás aportando a tu comunidad y al planeta.
+          </p>
+
+          <div class="hero-cta-row">
+            <button class="btn-primary">
+              🚚 Agendar retiro domicilio
+            </button>
+            <span class="hero-note">
+              Sin contrato, tarifa plana por retiro.
+            </span>
+          </div>
+
+          <div class="impact-grid">
+            <div class="impact-card">
+              <span class="impact-label">Kilos reciclados por la comunidad</span>
+              <span class="impact-value">0,00 kg</span>
+              <span class="impact-tag">Meta piloto: 500 kg / mes</span>
+            </div>
+            <div class="impact-card">
+              <span class="impact-label">CO₂ evitado estimado</span>
+              <span class="impact-value">0,0 kg CO₂e</span>
+              <span class="impact-tag">Crecimiento a medida que reciclas</span>
+            </div>
+            <div class="impact-card">
+              <span class="impact-label">Puntos activos RECYBOOM</span>
+              <span class="impact-value" id="stats-points">0</span>
+              <span class="impact-tag">Incluye puntos públicos + nuevos</span>
+            </div>
+          </div>
+        </div>
+
+        <aside class="hero-card">
+          <div class="hero-card-header">
+            <div class="hero-chip">
+              Ley REP · Envases y embalajes
+            </div>
+            <div class="hero-score">
+              Cumplimiento local: <span>En progreso</span>
+            </div>
+          </div>
+
+          <ul class="hero-list">
+            <li>
+              <div class="hero-dot"></div>
+              <span>Visualiza puntos limpios y REP en tu comuna.</span>
+            </li>
+            <li>
+              <div class="hero-dot"></div>
+              <span>Conecta retiro a domicilio con recicladores.</span>
+            </li>
+            <li>
+              <div class="hero-dot"></div>
+              <span>Registra tu impacto y genera reportes básicos.</span>
+            </li>
+          </ul>
+
+          <div class="mini-map-preview">
+            <div class="mini-map-left">
+              <div class="mini-map-badge">
+                <span>📍</span> Zonas activas piloto
+              </div>
+              <div>
+                <strong>Santiago centro · Ñuñoa · La Florida</strong><br />
+                <span class="muted">Puntos públicos + puntos RECYBOOM sugeridos.</span>
+              </div>
+              <div class="muted">
+                Haz clic en el mapa para proponer tu punto limpio de barrio.
+              </div>
+            </div>
+            <div class="mini-map-right">
+              <div class="mini-dot-row">
+                <div class="mini-dot green"></div>
+                <div class="mini-dot"></div>
+                <div class="mini-dot"></div>
+              </div>
+              <div class="muted">
+                Vista rápida de calor de reciclaje local.
+              </div>
+            </div>
+          </div>
+        </aside>
       </div>
     </section>
 
-    <section class="right">
-      <div class="stage" id="stage">
-        <div id="slideContainer"></div>
-      </div>
-      <div class="panel card">
-        <h3>Exámenes subidos</h3>
-        <ul id="examList"></ul>
-      </div>
-    </section>
-  </main>
+    <main class="main-layout">
+      <!-- ACCIONES RÁPIDAS -->
+      <section class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Acciones rápidas</div>
+            <div class="card-subtitle">
+              Empieza por lo esencial: ver puntos cercanos, agendar retiro o sugerir un nuevo punto limpio.
+            </div>
+          </div>
+        </div>
 
-  <footer class="footer">
-    <span>Hecho para ti — AulaPudu</span>
-  </footer>
+        <div class="quick-actions">
+          <div class="quick-card">
+            <div class="quick-title">Ver puntos de reciclaje cercanos</div>
+            <div class="quick-desc">
+              Filtra por tipo de residuo y encuentra el punto limpio que más te acomode.
+            </div>
+            <div class="chip-row">
+              <span class="chip primary">♻️ Multi-material</span>
+              <span class="chip">🧴 Plásticos</span>
+              <span class="chip">🍾 Vidrio</span>
+            </div>
+          </div>
 
-  <script src="/socket.io/socket.io.js"></script>
-  <script src="/js/app.js"></script>
+          <div class="quick-card">
+            <div class="quick-title">Agendar retiro a domicilio</div>
+            <div class="quick-desc">
+              Selecciona tu dirección, el tipo de residuos y un horario. Nosotros coordinamos el resto.
+            </div>
+            <div class="chip-row">
+              <span class="chip primary">🚚 Retiro puerta a puerta</span>
+              <span class="chip">Hasta 3 sacos por visita</span>
+            </div>
+          </div>
+
+          <div class="quick-card">
+            <div class="quick-title">Sugerir nuevo punto limpio</div>
+            <div class="quick-desc">
+              ¿Tu barrio está motivado pero no hay dónde reciclar? Sugiere un lugar y lo evaluamos.
+            </div>
+            <div class="chip-row">
+              <span class="chip primary">📍 Puntos de barrio</span>
+              <span class="chip">Juntas de vecinos, colegios</span>
+            </div>
+          </div>
+
+          <div class="quick-card">
+            <div class="quick-title">Ver mi impacto</div>
+            <div class="quick-desc">
+              Lleva la cuenta de cuánto reciclas y usa tus datos para proyectos, informes o colegios.
+            </div>
+            <div class="chip-row">
+              <span class="chip primary">📊 Kilos y CO₂ ahorrado</span>
+              <span class="chip">Reportes descargables (próx.)</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- MAPA Y FORMULARIOS -->
+      <section class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Mapa de reciclaje RECYBOOM</div>
+            <div class="card-subtitle">
+              Mira tu ubicación, los puntos activos y haz clic en el mapa para sugerir un nuevo punto limpio.
+            </div>
+          </div>
+        </div>
+
+        <div id="map"></div>
+
+        <div class="map-meta">
+          <div class="map-status" id="location-status">
+            <div class="status-dot" id="location-dot"></div>
+            <span>Listo para detectar tu ubicación.</span>
+          </div>
+          <div class="legend">
+            <div class="legend-item">
+              <span class="legend-color user"></span>
+              <span>Tu ubicación</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-color"></span>
+              <span>Puntos de reciclaje</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-color new"></span>
+              <span>Puntos sugeridos</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Formularios bajo el mapa -->
+        <div class="forms-grid">
+          <!-- AGENDAR RETIRO -->
+          <div class="form-card">
+            <h3>🚚 Agendar retiro a domicilio</h3>
+            <p>
+              Completa tu dirección y el tipo de residuos. Esta es una demo: los datos no se envían a un servidor, pero el flujo simula la experiencia real.
+            </p>
+            <div class="form-row">
+              <div class="form-control">
+                <label for="pickup-address">Dirección</label>
+                <input
+                  type="text"
+                  id="pickup-address"
+                  placeholder="Ej: Av. Siempre Viva 123, Santiago"
+                />
+              </div>
+              <div class="form-control">
+                <label for="pickup-date">Fecha y horario</label>
+                <input type="datetime-local" id="pickup-date" />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-control">
+                <label for="pickup-material">Material principal</label>
+                <select id="pickup-material">
+                  <option value="">Selecciona material</option>
+                  <option value="mixto">Mixto (envases varios)</option>
+                  <option value="plastico">Plásticos</option>
+                  <option value="vidrio">Vidrio</option>
+                  <option value="papel-carton">Papel y cartón</option>
+                  <option value="latas">Latas y metales</option>
+                </select>
+              </div>
+              <div class="form-control">
+                <label for="pickup-notes">Notas</label>
+                <input
+                  type="text"
+                  id="pickup-notes"
+                  placeholder="Portón verde, dejar en conserjería, etc."
+                />
+              </div>
+            </div>
+            <button class="btn-small-primary" id="btn-pickup">
+              Confirmar solicitud demo
+            </button>
+            <div class="muted" id="pickup-message"></div>
+          </div>
+
+          <!-- SUGERIR NUEVO PUNTO -->
+          <div class="form-card">
+            <h3>📍 Sugerir nuevo punto limpio</h3>
+            <p>
+              Haz clic en el mapa para fijar la ubicación del punto sugerido. Luego completa los datos básicos.
+            </p>
+
+            <div class="form-control" style="margin-bottom: 6px;">
+              <button class="btn-ghost" type="button">
+                <span>🖱️</span> Haz clic en el mapa para seleccionar coordenadas
+              </button>
+              <span class="muted" id="coordinates-label">
+                Aún no has seleccionado un punto en el mapa.
+              </span>
+            </div>
+
+            <div class="form-row">
+              <div class="form-control">
+                <label for="stop-name">Nombre del punto</label>
+                <input
+                  type="text"
+                  id="stop-name"
+                  placeholder="Ej: Punto limpio Junta de Vecinos Los Alerces"
+                />
+              </div>
+              <div class="form-control">
+                <label for="stop-type">Tipo de punto</label>
+                <select id="stop-type">
+                  <option value="">Selecciona tipo</option>
+                  <option value="publico">Público (municipal)</option>
+                  <option value="privado">Privado con acceso vecinal</option>
+                  <option value="comercio">Comercio / empresa</option>
+                  <option value="educativo">Colegio / universidad</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-control">
+              <label for="stop-materials">Materiales aceptados</label>
+              <textarea
+                id="stop-materials"
+                placeholder="Ej: Plásticos PET, cartón limpio, vidrio, latas..."
+              ></textarea>
+            </div>
+
+            <button class="btn-small-primary" id="btn-new-stop">
+              Enviar sugerencia demo
+            </button>
+            <div class="muted" id="new-stop-message"></div>
+
+            <ul class="points-list" id="suggested-points-list">
+              <!-- Se llenará con JS -->
+            </ul>
+          </div>
+        </div>
+
+        <!-- LISTA DE PUNTOS EXISTENTES -->
+        <div style="margin-top: 10px;">
+          <span class="tag">
+            🧭 Puntos de reciclaje de ejemplo cargados para la demo
+          </span>
+          <ul class="points-list" id="points-list"></ul>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      RECYBOOM · Demo educativa de plataforma de reciclaje y Ley REP ·
+      Construida con HTML, CSS, Leaflet y OpenStreetMap.
+    </footer>
+  </div>
+
+  <!-- Leaflet JS -->
+  <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+    crossorigin=""
+  ></script>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const locationStatus = document.getElementById("location-status");
+      const locationDot = document.getElementById("location-dot");
+      const statsPoints = document.getElementById("stats-points");
+      const pointsList = document.getElementById("points-list");
+      const suggestedPointsList = document.getElementById("suggested-points-list");
+      const coordinatesLabel = document.getElementById("coordinates-label");
+      const btnLocate = document.getElementById("btn-locate");
+
+      const btnPickup = document.getElementById("btn-pickup");
+      const pickupMessage = document.getElementById("pickup-message");
+
+      const btnNewStop = document.getElementById("btn-new-stop");
+      const newStopMessage = document.getElementById("new-stop-message");
+
+      let userMarker = null;
+      let newStopLatLng = null;
+      let newStopMarker = null;
+
+      // Inicializar mapa en Santiago, Chile
+      const map = L.map("map", {
+        center: [-33.45, -70.66],
+        zoom: 12,
+      });
+
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 19,
+        attribution: "&copy; OpenStreetMap contributors",
+      }).addTo(map);
+
+      // Íconos personalizados simples
+      const userIcon = L.circleMarker([0, 0], {
+        radius: 7,
+        color: "#38bdf8",
+        fillColor: "#38bdf8",
+        fillOpacity: 0.9,
+      });
+
+      const stopIcon = L.circleMarker([0, 0], {
+        radius: 6,
+        color: "#22c55e",
+        fillColor: "#22c55e",
+        fillOpacity: 0.9,
+      });
+
+      const newStopIcon = L.circleMarker([0, 0], {
+        radius: 6,
+        color: "#facc15",
+        fillColor: "#facc15",
+        fillOpacity: 0.9,
+      });
+
+      function createCircleMarker(lat, lng, options) {
+        return L.circleMarker([lat, lng], options);
+      }
+
+      // Puntos de reciclaje de ejemplo
+      const baseStops = [
+        {
+          name: "Punto Limpio Plaza Ñuñoa",
+          type: "Público municipal",
+          materials: "Plásticos, papel/cartón, vidrio",
+          lat: -33.455,
+          lng: -70.598,
+        },
+        {
+          name: "Centro de reciclaje Mall Aventura",
+          type: "Comercio",
+          materials: "Envases varios, latas, vidrio",
+          lat: -33.482,
+          lng: -70.651,
+        },
+        {
+          name: "Punto Limpio Metro Ñuble",
+          type: "Público",
+          materials: "Plástico PET, latas",
+          lat: -33.473,
+          lng: -70.629,
+        },
+        {
+          name: "Colegio Verde Sustentable",
+          type: "Educativo",
+          materials: "Papeles, cartones, botellas plásticas",
+          lat: -33.43,
+          lng: -70.61,
+        },
+      ];
+
+      // Renderizar puntos de ejemplo
+      baseStops.forEach((stop) => {
+        const marker = createCircleMarker(stop.lat, stop.lng, {
+          radius: 6,
+          color: "#22c55e",
+          fillColor: "#22c55e",
+          fillOpacity: 0.9,
+        }).addTo(map);
+
+        marker.bindPopup(
+          `<strong>${stop.name}</strong><br/>
+           <small>${stop.type}</small><br/>
+           <small>Materiales: ${stop.materials}</small>`
+        );
+      });
+
+      // Llenar lista de puntos
+      function renderBaseStopsList() {
+        pointsList.innerHTML = "";
+        baseStops.forEach((stop) => {
+          const li = document.createElement("li");
+          li.textContent = `${stop.name} · ${stop.type} · ${stop.materials}`;
+          pointsList.appendChild(li);
+        });
+        statsPoints.textContent = baseStops.length.toString();
+      }
+
+      renderBaseStopsList();
+
+      // Geolocalización
+      function updateLocationStatus(message, isError = false) {
+        locationStatus.querySelector("span").textContent = message;
+        if (isError) {
+          locationDot.classList.add("error");
+        } else {
+          locationDot.classList.remove("error");
+        }
+      }
+
+      function locateUser() {
+        if (!navigator.geolocation) {
+          updateLocationStatus("Tu navegador no soporta geolocalización.", true);
+          return;
+        }
+
+        updateLocationStatus("Buscando tu ubicación…");
+
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const { latitude, longitude } = position.coords;
+            const latLng = [latitude, longitude];
+
+            if (userMarker) {
+              map.removeLayer(userMarker);
+            }
+
+            userMarker = createCircleMarker(latLng[0], latLng[1], {
+              radius: 7,
+              color: "#38bdf8",
+              fillColor: "#38bdf8",
+              fillOpacity: 0.9,
+            }).addTo(map);
+
+            userMarker.bindPopup("Estás aquí 🧍‍♂️").openPopup();
+
+            map.setView(latLng, 14);
+            updateLocationStatus("Ubicación detectada. Puedes ver tus puntos cercanos.");
+          },
+          () => {
+            updateLocationStatus("No pudimos obtener tu ubicación (permiso denegado).", true);
+          }
+        );
+      }
+
+      // Botón "Ubicarme ahora"
+      btnLocate.addEventListener("click", locateUser);
+
+      // Intento automático inicial (silencioso, sólo cambia texto si funciona)
+      locateUser();
+
+      // Clic en mapa para sugerir nuevo punto
+      map.on("click", function (e) {
+        newStopLatLng = e.latlng;
+
+        // Actualizar marker temporal
+        if (newStopMarker) {
+          map.removeLayer(newStopMarker);
+        }
+
+        newStopMarker = createCircleMarker(newStopLatLng.lat, newStopLatLng.lng, {
+          radius: 6,
+          color: "#facc15",
+          fillColor: "#facc15",
+          fillOpacity: 0.9,
+        }).addTo(map);
+
+        newStopMarker.bindPopup("Nuevo punto sugerido aquí").openPopup();
+
+        coordinatesLabel.textContent =
+          "Coordenadas seleccionadas: " +
+          newStopLatLng.lat.toFixed(5) +
+          ", " +
+          newStopLatLng.lng.toFixed(5);
+      });
+
+      // Simulación de agendamiento de retiro
+      btnPickup.addEventListener("click", function () {
+        const address = document.getElementById("pickup-address").value.trim();
+        const date = document.getElementById("pickup-date").value;
+        const material = document.getElementById("pickup-material").value;
+
+        if (!address || !date || !material) {
+          pickupMessage.textContent = "Completa dirección, fecha y material principal para simular tu solicitud.";
+          pickupMessage.style.color = "#f97373";
+          return;
+        }
+
+        pickupMessage.style.color = "#bbf7d0";
+        pickupMessage.textContent =
+          "Solicitud demo registrada ✅. En una versión real, aquí se enviaría tu retiro a la logística de RECYBOOM.";
+      });
+
+      // Enviar sugerencia demo de nuevo punto
+      btnNewStop.addEventListener("click", function () {
+        const name = document.getElementById("stop-name").value.trim();
+        const type = document.getElementById("stop-type").value;
+        const materials = document.getElementById("stop-materials").value.trim();
+
+        if (!newStopLatLng) {
+          newStopMessage.textContent = "Primero haz clic en el mapa para seleccionar la ubicación del punto.";
+          newStopMessage.style.color = "#f97373";
+          return;
+        }
+
+        if (!name || !type) {
+          newStopMessage.textContent = "Completa al menos el nombre y el tipo de punto para enviar la sugerencia.";
+          newStopMessage.style.color = "#f97373";
+          return;
+        }
+
+        newStopMessage.style.color = "#bbf7d0";
+        newStopMessage.textContent =
+          "Sugerencia demo registrada ✅. En la plataforma real se enviaría a revisión del equipo / municipio.";
+
+        // Agregar a lista visual de sugeridos
+        const li = document.createElement("li");
+        li.textContent =
+          name +
+          " (" +
+          type +
+          ") – " +
+          newStopLatLng.lat.toFixed(4) +
+          ", " +
+          newStopLatLng.lng.toFixed(4);
+        suggestedPointsList.appendChild(li);
+
+        // Dejar popup más completo
+        if (newStopMarker) {
+          const matText = materials || "Materiales por definir";
+          newStopMarker.bindPopup(
+            `<strong>${name}</strong><br/>
+             <small>${type}</small><br/>
+             <small>${matText}</small><br/>
+             <small>Sugerencia enviada (demo)</small>`
+          );
+        }
+
+        // Limpiar campos (excepto ubicación)
+        document.getElementById("stop-name").value = "";
+        document.getElementById("stop-type").value = "";
+        document.getElementById("stop-materials").value = "";
+      });
+    });
+  </script>
 </body>
 </html>
