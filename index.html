@@ -17,6 +17,7 @@
     :root {
       --green: #22c55e;
       --green-dark: #15803d;
+      --teal: #00897b;
       --blue: #0ea5e9;
       --red: #ef4444;
 
@@ -97,9 +98,9 @@
 
     /* HEADER */
     .header {
-      background: rgba(255, 255, 255, 0.96);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid rgba(226, 232, 240, 0.9);
+      background: var(--teal);
+      color: #ecfdf5;
+      border-bottom: 1px solid rgba(15, 118, 110, 0.6);
       padding: 10px 16px;
       display: flex;
       justify-content: space-between;
@@ -119,14 +120,14 @@
       width: 36px;
       height: 36px;
       border-radius: 999px;
-      background: #dcfce7;
+      background: #bbf7d0;
       display: flex;
       align-items: center;
       justify-content: center;
       color: var(--green-dark);
       font-weight: 700;
       font-size: 18px;
-      box-shadow: 0 6px 18px rgba(22, 163, 74, 0.35);
+      box-shadow: 0 6px 18px rgba(0, 105, 92, 0.4);
     }
 
     .header-title {
@@ -138,16 +139,16 @@
     .header-sub {
       margin: 0;
       font-size: 12px;
-      color: var(--text-muted);
+      color: #e0f2f1;
     }
 
     .header-badge {
       font-size: 11px;
       padding: 4px 10px;
       border-radius: var(--radius-pill);
-      border: 1px solid var(--border);
-      background: #f9fafb;
-      color: var(--text-muted);
+      border: 1px solid rgba(224, 242, 241, 0.8);
+      background: rgba(38, 166, 154, 0.35);
+      color: #e0f2f1;
     }
 
     /* MAIN */
@@ -172,46 +173,48 @@
       display: block;
     }
 
-    /* HOME / PANTALLA VERDE DESPUÉS DEL SPLASH */
+    /* HOME / PANTALLA CON MAPA CIRCULAR */
     .home-view {
       padding-top: 4px;
     }
 
     .home-hero {
-      background: linear-gradient(145deg, #16a34a, #22c55e, #0ea5e9);
-      color: #ecfdf5;
-      border-radius: 24px;
-      padding: 24px 18px 28px;
+      background: #ffffff;
+      border-radius: 0 0 24px 24px;
+      padding: 18px 18px 24px;
       text-align: center;
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 10px;
-      box-shadow: 0 18px 45px rgba(22, 163, 74, 0.4);
+      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.1);
+      border: 1px solid var(--border);
+      border-top: none;
     }
 
     .home-title {
-      font-size: 22px;
+      font-size: 20px;
       font-weight: 800;
       letter-spacing: 0.16em;
       text-transform: uppercase;
+      color: var(--teal);
     }
 
     .home-subtitle {
       font-size: 13px;
-      opacity: 0.95;
+      color: var(--text-muted);
     }
 
     .home-logo {
       width: 56px;
       height: 56px;
       border-radius: 999px;
-      background: rgba(255, 255, 255, 0.18);
+      background: #e0f2f1;
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 32px;
-      box-shadow: 0 10px 30px rgba(15, 118, 110, 0.4);
+      box-shadow: 0 10px 30px rgba(0, 105, 92, 0.35);
     }
 
     .home-map-circle {
@@ -221,8 +224,8 @@
       max-height: 68vw;
       border-radius: 999px;
       overflow: hidden;
-      border: 4px solid rgba(255, 255, 255, 0.9);
-      box-shadow: 0 14px 40px rgba(15, 118, 110, 0.55);
+      border: 4px solid #ffffff;
+      box-shadow: 0 14px 40px rgba(15, 23, 42, 0.25);
       margin-top: 6px;
       cursor: pointer;
       position: relative;
@@ -239,18 +242,48 @@
       text-transform: uppercase;
       padding: 4px 6px;
       border-radius: 999px;
-      background: rgba(15, 23, 42, 0.65);
+      background: rgba(15, 23, 42, 0.7);
+      color: #f9fafb;
     }
 
     .home-cta {
       margin-top: 12px;
       font-weight: 700;
       font-size: 15px;
+      color: var(--teal);
     }
 
     .home-hint {
       font-size: 12px;
-      opacity: 0.9;
+      color: var(--text-muted);
+    }
+
+    .home-quick-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .home-quick-card {
+      background: #f9fafb;
+      border-radius: 14px;
+      padding: 10px 8px;
+      border: 1px solid #e5e7eb;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .home-quick-icon {
+      font-size: 20px;
+    }
+
+    .home-quick-title {
+      font-weight: 600;
     }
 
     /* CARDS */
@@ -260,7 +293,7 @@
       border: 1px solid rgba(226, 232, 240, 0.9);
       padding: 12px 12px 10px;
       margin-bottom: 12px;
-      box-shadow: 0 10px 28px rgba(15, 23, 42, 0.08);
+      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
     }
 
     .card-title {
@@ -513,9 +546,9 @@
     }
 
     .nav-btn-active {
-      color: var(--green-dark);
+      color: var(--teal);
       font-weight: 600;
-      background: #dcfce7;
+      background: #e0f2f1;
     }
   </style>
 </head>
@@ -523,7 +556,7 @@
   <!-- SPLASH -->
   <div id="splash" class="splash">
     <div class="splash-title">RECYBOOM</div>
-    <div class="splash-sub">Reciclar fácil, en tu barrio</div>
+    <div class="splash-sub">Reciclar fácil, en todo Chile</div>
     <div class="splash-icon">♻️</div>
     <div class="splash-hint">Toca la pantalla para entrar</div>
   </div>
@@ -535,33 +568,46 @@
         <div class="logo-circle">RB</div>
         <div>
           <h1 class="header-title">RECYBOOM</h1>
-          <p class="header-sub">Reciclar fácil para todos</p>
+          <p class="header-sub">Reciclaje simple en Chile</p>
         </div>
       </div>
-      <div class="header-badge">Piloto · Huechuraba</div>
+      <div class="header-badge">Piloto · Chile</div>
     </header>
 
     <!-- CONTENIDO -->
     <main class="main">
       <div class="content">
-        <!-- VISTA HOME (pantalla verde con mapa circular) -->
+        <!-- VISTA HOME (pantalla con mapa circular) -->
         <section id="view-home" class="view view-active home-view">
           <div class="home-hero">
             <div class="home-title">RECYBOOM</div>
-            <p class="home-subtitle">Reciclaje simple y cercano a tu barrio</p>
+            <p class="home-subtitle">Encuentra puntos de reciclaje y agenda retiros en todo Chile.</p>
             <div class="home-logo">♻️</div>
             <div id="map-circle" class="home-map-circle"></div>
-            <p class="home-cta">Haz Boom para Reciclar</p>
-            <p class="home-hint">Toca el mapa circular para ver todos los puntos y herramientas</p>
+            <p class="home-cta">Haz BOOM para reciclar</p>
+            <p class="home-hint">Toca el mapa circular para ver el mapa completo y las opciones de la app.</p>
+
+            <div class="home-quick-grid">
+              <div class="home-quick-card" id="quick-map">
+                <div class="home-quick-icon">🗺️</div>
+                <div class="home-quick-title">Ver Mapa</div>
+                <div style="font-size:11px;color:#6b7280;">Puntos de reciclaje</div>
+              </div>
+              <div class="home-quick-card" id="quick-retire">
+                <div class="home-quick-icon">🚚</div>
+                <div class="home-quick-title">Agendar Retiro</div>
+                <div style="font-size:11px;color:#6b7280;">Simulación a domicilio</div>
+              </div>
+            </div>
           </div>
         </section>
 
         <!-- VISTA MAPA -->
         <section id="view-map" class="view">
           <div class="card">
-            <h2 class="card-title">Mapa de reciclaje</h2>
+            <h2 class="card-title">Mapa de puntos en Chile</h2>
             <p class="card-text">
-              Mira tu ubicación y lugares para reciclar en Huechuraba. También puedes proponer un nuevo punto.
+              Mira tu ubicación y puntos de reciclaje de ejemplo en Chile. También puedes proponer un nuevo lugar cerca de ti.
             </p>
 
             <button class="btn-main" id="btn-locate-top">
@@ -632,7 +678,7 @@
             </button>
             <div id="new-stop-message" class="message"></div>
 
-            <h3 style="font-size:14px; margin:10px 0 4px;">Lugares de ejemplo en Huechuraba</h3>
+            <h3 style="font-size:14px; margin:10px 0 4px;">Puntos de ejemplo en Chile</h3>
             <ul id="example-list" class="list"></ul>
 
             <h3 style="font-size:14px; margin:10px 0 4px;">Tus sugerencias (solo hoy)</h3>
@@ -643,27 +689,27 @@
         <!-- VISTA RETIRO -->
         <section id="view-retire" class="view">
           <div class="card">
-            <h2 class="card-title">Pedir retiro (demo)</h2>
+            <h2 class="card-title">Agendar retiro (demo)</h2>
             <p class="card-text">
-              Aquí puedes simular que pides un retiro de reciclaje. No se envía a ningún lado, es solo para mostrar la idea.
+              Simula un retiro de reciclaje a domicilio. En una versión real, esta solicitud se enviaría a un gestor de reciclaje local.
             </p>
 
             <div class="form-group">
-              <label class="form-label" for="pickup-address">Dirección</label>
+              <label class="form-label" for="pickup-address">Dirección de retiro</label>
               <input
                 type="text"
                 id="pickup-address"
-                placeholder="Ej: Calle 123, Huechuraba"
+                placeholder="Ej: Av. Siempre Viva 123, Santiago"
               />
             </div>
 
             <div class="form-group">
-              <label class="form-label" for="pickup-date">Día y hora</label>
+              <label class="form-label" for="pickup-date">Día y hora preferida</label>
               <input type="datetime-local" id="pickup-date" />
             </div>
 
             <div class="form-group">
-              <label class="form-label" for="pickup-type">Qué quieres reciclar</label>
+              <label class="form-label" for="pickup-type">Material principal de retiro</label>
               <select id="pickup-type">
                 <option value="">Selecciona una opción</option>
                 <option value="mixto">Mezcla de envases</option>
@@ -699,16 +745,16 @@
               <div class="profile-avatar">🙂</div>
               <div>
                 <div class="profile-name">Invitado RECYBOOM</div>
-                <div class="profile-text">Cuenta de prueba</div>
+                <div class="profile-text">Cuenta de demostración</div>
               </div>
             </div>
             <p class="card-text">
-              Aquí podrías ver en el futuro:
+              En una versión completa de la app podrías ver:
             </p>
             <ul class="list">
               <li>Cuántas veces has reciclado.</li>
               <li>Qué materiales reciclas más.</li>
-              <li>Tu impacto ambiental estimado.</li>
+              <li>Tu impacto ambiental estimado en Chile.</li>
             </ul>
           </div>
 
@@ -718,7 +764,7 @@
               RECYBOOM quiere hacer el reciclaje algo muy simple:
             </p>
             <ul class="list">
-              <li>Ver lugares cercanos para reciclar en Huechuraba.</li>
+              <li>Ver lugares cercanos para reciclar en Chile.</li>
               <li>Proponer nuevos puntos de reciclaje.</li>
               <li>Simular retiros a domicilio.</li>
             </ul>
@@ -802,14 +848,12 @@
 
       navButtons.forEach((btn) => {
         btn.addEventListener("click", () => {
-          // Al usar el menú, asumimos que ya estamos dentro de la app
           bottomNav.classList.add("bottom-nav-visible");
           showView(btn.dataset.view);
         });
       });
 
       function enterFromHome() {
-        // Mostrar mapa como vista principal y menú inferior
         bottomNav.classList.add("bottom-nav-visible");
         showView("map");
       }
@@ -827,6 +871,8 @@
       const newStopMessage = document.getElementById("new-stop-message");
 
       const mapCircleEl = document.getElementById("map-circle");
+      const quickMap = document.getElementById("quick-map");
+      const quickRetire = document.getElementById("quick-retire");
 
       let map;
       let miniMap;
@@ -835,70 +881,78 @@
       let newStopLatLng = null;
       let exampleMarkers = [];
 
-      // PUNTOS DE EJEMPLO EN HUECHURABA (varios tipos)
+      // PUNTOS DE EJEMPLO EN CHILE (varias ciudades)
       const examplePlaces = [
         {
-          name: "Punto Cartón Plaza Central",
-          info: "Solo cartón",
-          material: "carton",
-          lat: -33.378,
-          lng: -70.64,
-        },
-        {
-          name: "Punto Vidrio Ciudad Empresarial",
-          info: "Solo vidrio (botellas y frascos)",
-          material: "vidrio",
-          lat: -33.385,
-          lng: -70.628,
-        },
-        {
-          name: "Punto Latas Pedro Fontova",
-          info: "Solo latas de bebidas y conservas",
-          material: "latas",
-          lat: -33.37,
-          lng: -70.653,
-        },
-        {
-          name: "Strip Center Huechuraba",
-          info: "Solo plástico (botellas PET)",
-          material: "plastico",
-          lat: -33.379,
-          lng: -70.647,
-        },
-        {
-          name: "Supermercado Verde Huechuraba",
+          name: "Punto Limpio Plaza de Armas",
           info: "Mixto: plástico, vidrio y cartón",
           material: "mixto",
-          lat: -33.387,
-          lng: -70.636,
+          city: "Santiago",
+          lat: -33.4372,
+          lng: -70.6506,
         },
         {
-          name: "Consultorio Huechuraba",
-          info: "Pilas y baterías pequeñas",
-          material: "pilas",
-          lat: -33.384,
-          lng: -70.646,
+          name: "Centro Reciclaje Costanera",
+          info: "Solo plástico (botellas PET)",
+          material: "plastico",
+          city: "Valdivia",
+          lat: -39.8156,
+          lng: -73.2459,
         },
         {
-          name: "Junta de Vecinos Los Cipreses",
-          info: "Solo papel y documentos",
+          name: "Punto Vidrio Torre Mall",
+          info: "Solo vidrio (botellas y frascos)",
+          material: "vidrio",
+          city: "Concepción",
+          lat: -36.8269,
+          lng: -73.0498,
+        },
+        {
+          name: "Eco Punto Latas Centro",
+          info: "Solo latas de bebidas y conservas",
+          material: "latas",
+          city: "Antofagasta",
+          lat: -23.6509,
+          lng: -70.3975,
+        },
+        {
+          name: "Papel y Cartón Universidad",
+          info: "Papel y documentos",
           material: "papel",
-          lat: -33.375,
-          lng: -70.632,
+          city: "Valparaíso",
+          lat: -33.0472,
+          lng: -71.6127,
         },
         {
-          name: "Taller TecnoRecicla",
+          name: "Reciclaje Electrónicos Norte",
           info: "Solo electrónicos (computadores, celulares)",
           material: "electro",
-          lat: -33.392,
-          lng: -70.642,
+          city: "Iquique",
+          lat: -20.2307,
+          lng: -70.1357,
+        },
+        {
+          name: "Contenedor Pilas Municipalidad",
+          info: "Pilas y baterías pequeñas",
+          material: "pilas",
+          city: "Temuco",
+          lat: -38.7359,
+          lng: -72.5904,
+        },
+        {
+          name: "Punto Cartón Feria Vecinal",
+          info: "Solo cartón",
+          material: "carton",
+          city: "Puerto Montt",
+          lat: -41.4689,
+          lng: -72.9411,
         },
       ];
 
-      // Inicializar mapa principal centrado en Huechuraba
+      // Inicializar mapa principal centrado en Chile
       map = L.map("map", {
-        center: [-33.383, -70.64],
-        zoom: 13,
+        center: [-35.6751, -71.5429], // centro aproximado de Chile
+        zoom: 5,
       });
 
       L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -909,8 +963,8 @@
       // Mapa circular de bienvenida (mini mapa)
       if (mapCircleEl) {
         miniMap = L.map("map-circle", {
-          center: [-33.383, -70.64],
-          zoom: 12,
+          center: [-35.6751, -71.5429],
+          zoom: 4,
           zoomControl: false,
           attributionControl: false,
         });
@@ -928,7 +982,7 @@
           miniMap.tap.disable();
         }
 
-        L.circleMarker([-33.383, -70.64], {
+        L.circleMarker([-35.6751, -71.5429], {
           radius: 8,
           color: "#22c55e",
           fillColor: "#22c55e",
@@ -936,6 +990,17 @@
         }).addTo(miniMap);
 
         mapCircleEl.addEventListener("click", enterFromHome);
+      }
+
+      if (quickMap) {
+        quickMap.addEventListener("click", enterFromHome);
+      }
+
+      if (quickRetire) {
+        quickRetire.addEventListener("click", () => {
+          bottomNav.classList.add("bottom-nav-visible");
+          showView("retire");
+        });
       }
 
       // Mostrar lugares de ejemplo con marcadores
@@ -954,6 +1019,8 @@
               p.info +
               "</small><br><small>Material: " +
               p.material +
+              "</small><br><small>Ciudad: " +
+              p.city +
               "</small>"
           );
 
@@ -962,24 +1029,22 @@
 
       // Rellenar lista de ejemplo según filtro
       function renderExampleList() {
-        const filter = filterMaterial.value; // 'todos', 'carton', 'vidrio', etc.
+        const filter = filterMaterial.value;
         exampleList.innerHTML = "";
 
         exampleMarkers.forEach(({ place, marker }) => {
           const matches = filter === "todos" || place.material === filter;
 
-          // Mostrar/ocultar marcador
           if (matches) {
             if (!map.hasLayer(marker)) marker.addTo(map);
           } else {
             if (map.hasLayer(marker)) map.removeLayer(marker);
           }
 
-          // Agregar a lista si coincide
           if (matches) {
             const li = document.createElement("li");
             li.textContent =
-              place.name + " – " + place.info + " (Huechuraba)";
+              place.name + " – " + place.info + " (" + place.city + ")";
             exampleList.appendChild(li);
           }
         });
@@ -1031,7 +1096,7 @@
               .addTo(map)
               .bindPopup("Estás aquí");
 
-            map.setView([lat, lng], 14);
+            map.setView([lat, lng], 13);
             updateLocationStatus("Ubicación detectada.", false);
           },
           () => {
@@ -1041,7 +1106,7 @@
       }
 
       btnLocateTop.addEventListener("click", () => {
-        enterFromHome(); // Asegura que estamos en la vista de mapa
+        enterFromHome();
         locateUser();
       });
 
